@@ -1,0 +1,101 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AuthenProject.Authorization;
+using AuthenProject.Dtos;
+using AuthenProject.Service.Interface;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace AuthenProject.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
+    public class UserController : ControllerBase
+    {
+        private readonly IUserService _userService;
+        public UserController(IUserService userService)
+        {
+            _userService = userService;
+        }
+        //Post api/user/register
+        [HttpPost("Register")]
+        [Authorize(Permission.Users.Create)]
+        public async Task<IActionResult> RegisterUser(RegisterUserModel model)
+        {
+            var user = await _userService.RegisterUSer(model);
+            if(user == null)
+            {
+                return BadRequest(user);
+            }
+            return Ok(user);
+        }
+        //Post api/user/login
+        [HttpPost("Login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> LoginUSer(LoginUserModel model)
+        {
+            var user = await _userService.LoginUser(model);
+            if (user == null)
+            {
+                return BadRequest(user);
+            }
+            return Ok(user);
+        }
+        //Get api/user/getall
+        [HttpGet("Getall")]
+        [Authorize(Permission.Users.View)]
+        public async Task<IActionResult> GetAllUser(string UserName,string Email)
+        {
+            var users = await _userService.GetAllUser(UserName,Email);
+            if (users == null)
+            {
+                return BadRequest(users);
+            }
+            return Ok(users);
+        }
+        //Get api/user/userid
+        [HttpGet("{UserId}")]
+        [Authorize(Permission.Users.View)]
+        public async Task<IActionResult> GetUserById (string UserId)
+        {
+            var user = await _userService.GetUserById(UserId);
+            if (user == null)
+            {
+                return BadRequest(user);
+            }
+            return Ok(user);
+        }
+        //Delete api/user/userid
+        [HttpDelete("{UserId}")]
+        [Authorize(Permission.Users.Delete)]
+        public async Task<IActionResult> DeleteUser(string UserId)
+        {
+            var user = await _userService.DeleteUser(UserId);
+            if (user == null)
+            {
+                return BadRequest(user);
+            }
+            return Ok(user);
+        }
+        //Update api/user/userid
+        [HttpPut("{UserId}")]
+        [Authorize(Permission.Users.Edit)]
+        public async Task<IActionResult> UpdateUser(string UserId,UpdateUserModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var user = await _userService.UpdateUser(UserId, model);
+            if (user == null)
+            {
+                return BadRequest(user);
+            }
+            return Ok(user);
+        }
+    }
+}
