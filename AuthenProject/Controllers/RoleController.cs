@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using AuthenProject.Dtos;
 using AuthenProject.Service.Interface;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +13,7 @@ namespace AuthenProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "ADMIN")]
     public class RoleController : ControllerBase
     {
         private readonly IRoleService _roleService;
@@ -20,6 +23,7 @@ namespace AuthenProject.Controllers
         }
         //Post api/role/create
         [HttpPost("Create")]
+
         public async Task<IActionResult> CreateRole(CreateRoleModel model)
         {
             var role = await _roleService.CreateRole(model);
@@ -64,9 +68,9 @@ namespace AuthenProject.Controllers
         }
         //Post api/role/removeuserfromrole
         [HttpPost("RemoveUserFromRole")]
-        public async Task<IActionResult> RemoveUserFromRole(Guid UserId, string RoleName)
+        public async Task<IActionResult> RemoveUserFromRole(AddToRoleModel model)
         {
-            var remove = await _roleService.RemoveUserFromRole(UserId, RoleName);
+            var remove = await _roleService.RemoveUserFromRole(model);
             if (remove == null)
             {
                 return BadRequest(remove);

@@ -14,7 +14,7 @@ namespace AuthenProject.Service.Interface
         Task<MessageReponse> RegisterUSer(RegisterUserModel model);
         Task<MessageReponse> LoginUser(LoginUserModel model);
         Task<List<GetAllUserReponse>> GetAllUser(string UserName,string Email);
-        Task<GetAllUserReponse> GetUserById(string UserId);
+        Task<GetUserByIdReponse> GetUserById(string UserId);
         Task<MessageReponse> DeleteUser(string UserId);
         Task<MessageReponse> UpdateUser(string UserId, UpdateUserModel model);
 

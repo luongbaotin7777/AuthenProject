@@ -38,20 +38,26 @@ namespace AuthenProject
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //Register SQL Dbcontext
+            //Register ApplicationDbContext
             services.AddDbContext<ApplicationDbContext>(options =>
             {
+                //Read string connection user SQLSERVER
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
             //Register Identity service
             services.AddIdentity<AppUser, AppRole>(options =>
             {
-
+                //Password.RequiredDigit is default true
+                //Password.RequiredLowerCase is default true
+                //Password.RequiredUpperCase is default true
                 // Cấu hình Lockout - khóa user
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5); // Khóa 5 phút
                 options.Lockout.MaxFailedAccessAttempts = 5; // Thất bại 5 lần thì khóa
                 options.Lockout.AllowedForNewUsers = true;
                 options.User.RequireUniqueEmail = true;
+                // Cấu hình đăng nhập.
+               /* options.SignIn.RequireConfirmedEmail = true;*/            // Cấu hình xác thực địa chỉ email (email phải tồn tại)
+               /* options.SignIn.RequireConfirmedPhoneNumber = false;*/     // Xác thực số điện thoại
             }).AddEntityFrameworkStores<ApplicationDbContext>() // lưu trữ thông tin identity trên EF( dbcontext->MySQL)
                 .AddDefaultTokenProviders();            // register tokenprovider : phát sinh token (resetpassword, email...)
             //Adding Authentication
@@ -68,7 +74,7 @@ namespace AuthenProject
                      ValidateIssuer = false,
                      ValidateAudience = false,
                      ValidateLifetime = true,
-                     ValidateIssuerSigningKey = true,
+                     ValidateIssuerSigningKey = true,//xác minh rằng khóa được sử dụng để ký mã thông báo đến là một phần của danh sách các khóa đáng tin cậy
                      RequireExpirationTime = true,
                      IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwts:Key"]))
                  };
@@ -88,6 +94,8 @@ namespace AuthenProject
             services.AddTransient<UserManager<AppUser>, UserManager<AppUser>>();
             services.AddTransient<SignInManager<AppUser>, SignInManager<AppUser>>();
             services.AddTransient<RoleManager<AppRole>, RoleManager<AppRole>>();
+            //DI IProductService
+            services.AddTransient<IProductService, ProductService>();
             //Register the handler
             services.AddTransient<IAuthorizationHandler, PermissionAuthorizationHandler>();
             //create a policy for each permission
@@ -130,6 +138,8 @@ namespace AuthenProject
 
 
             });
+            // Register the Swagger generator, defining 1 or more Swagger documents
+            services.AddSwaggerGen();
             services.AddControllers();
         }
 
@@ -142,7 +152,16 @@ namespace AuthenProject
             }
 
             app.UseHttpsRedirection();
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
 
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.RoutePrefix = string.Empty;
+            });
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

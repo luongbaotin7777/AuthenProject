@@ -20,6 +20,7 @@ namespace AuthenProject.Service.Handle
     {
         private readonly RoleManager<AppRole> _roleManager;
         private readonly UserManager<AppUser> _userManager;
+        
 
 
         public RoleService(RoleManager<AppRole> roleManager, UserManager<AppUser> userManager)
@@ -42,19 +43,19 @@ namespace AuthenProject.Service.Handle
                     IsSuccess = false,
                 };
             }
-            if (role.ToString() == "ADMIN")
+            if (role.Name == "ADMIN")
             {
                 await _roleManager.AddClaimAsync(role, new Claim(CustomClaimTypes.Permission, Permission.Users.Create));
                 await _roleManager.AddClaimAsync(role, new Claim(CustomClaimTypes.Permission, Permission.Users.View));
                 await _roleManager.AddClaimAsync(role, new Claim(CustomClaimTypes.Permission, Permission.Users.Edit));
                 await _roleManager.AddClaimAsync(role, new Claim(CustomClaimTypes.Permission, Permission.Users.Delete));
             }
-            if (role.ToString() == "MOD")
+            if (role.Name == "MOD")
             {
                 await _roleManager.AddClaimAsync(role, new Claim(CustomClaimTypes.Permission, Permission.Users.View));
                 await _roleManager.AddClaimAsync(role, new Claim(CustomClaimTypes.Permission, Permission.Users.Edit));
             }
-            if (role.ToString() == "USER")
+            if (role.Name == "USER")
             {
                 await _roleManager.AddClaimAsync(role, new Claim(CustomClaimTypes.Permission, Permission.Users.View));
             }
@@ -90,8 +91,19 @@ namespace AuthenProject.Service.Handle
                 }
                 else
                 {
-                    var isUserRole = await _userManager.GetRolesAsync(user);
-                    if (isUserRole != model.RoleName.ToList())
+                    var userRole = await _userManager.GetRolesAsync(user);
+
+                    bool checkrole = userRole.ToList().Contains(model.RoleName);
+
+                    if (checkrole)
+                    {
+                        return new MessageReponse()
+                        {
+                            Message = "User already belong to role",
+                            IsSuccess = false,
+                        };
+                    }
+                    else
                     {
                         var result = await _userManager.AddToRoleAsync(user, role.Name);
                         if (result.Succeeded)
@@ -108,12 +120,6 @@ namespace AuthenProject.Service.Handle
                             IsSuccess = true,
                         };
                     }
-                    return new MessageReponse()
-                    {
-                        Message = "User already belong to role",
-                        IsSuccess = false,
-                    };
-
                 }
 
             }
@@ -220,9 +226,9 @@ namespace AuthenProject.Service.Handle
 
         }
 
-        public async Task<MessageReponse> RemoveUserFromRole(Guid UserId, string RoleName)
+        public async Task<MessageReponse> RemoveUserFromRole(AddToRoleModel model)
         {
-            var user = await _userManager.FindByIdAsync(UserId.ToString());
+            var user = await _userManager.FindByIdAsync(model.UserName);
             if (user == null)
             {
                 return new MessageReponse()
@@ -233,7 +239,7 @@ namespace AuthenProject.Service.Handle
             }
             else
             {
-                var role = await _roleManager.FindByNameAsync(RoleName);
+                var role = await _roleManager.FindByNameAsync(model.RoleName);
                 if (role == null)
                 {
                     return new MessageReponse()
@@ -244,10 +250,11 @@ namespace AuthenProject.Service.Handle
                 }
                 else
                 {
-                    var isUserRole = await _userManager.GetRolesAsync(user);
-                    if (isUserRole.Contains(RoleName))
+                    var userRoles = await _userManager.GetRolesAsync(user);   
+                    bool checkrole = userRoles.ToList().Contains(model.RoleName);
+                    if (checkrole)
                     {
-                        var result = await _userManager.RemoveFromRoleAsync(user, role.Name);
+                        var result = await _userManager.RemoveFromRoleAsync(user, model.RoleName);
                         if (result.Succeeded)
                         {
                             return new MessageReponse()

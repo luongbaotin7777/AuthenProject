@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -19,15 +20,20 @@ namespace AuthenProject.Service.Handle
     public class UserService : IUserService
     {
         private readonly UserManager<AppUser> _userManager;
+        private readonly RoleManager<AppRole> _roleManager;
+
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IConfiguration _configuration;
         private readonly IPasswordHasher<AppUser> _passwordHasher;
-        public UserService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IConfiguration configuration, IPasswordHasher<AppUser> passwordHasher)
+        private readonly IRoleService _roleService;
+        public UserService(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager, SignInManager<AppUser> signInManager, IConfiguration configuration, IPasswordHasher<AppUser> passwordHasher, IRoleService roleService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
             _passwordHasher = passwordHasher;
+            _roleService = roleService;
+            _roleManager = roleManager;
         }
 
         public async Task<MessageReponse> DeleteUser(string UserId)
@@ -55,6 +61,7 @@ namespace AuthenProject.Service.Handle
             if (!string.IsNullOrEmpty(UserName) || !string.IsNullOrEmpty(Email))
             {
                 var users = _userManager.Users.Where(x => x.UserName.Contains(UserName) || x.Email.Contains(Email));
+
                 var result = await users.Select(x => new GetAllUserReponse()
                 {
                     Id = x.Id,
@@ -86,13 +93,14 @@ namespace AuthenProject.Service.Handle
            
         }
 
-        public async Task<GetAllUserReponse> GetUserById(string UserId)
+        public async Task<GetUserByIdReponse> GetUserById(string UserId)
         {
             var users = await _userManager.FindByIdAsync(UserId.ToString());
             if (users == null) throw new Exception($"{UserId} not found");
+            
             var claims = await _userManager.GetClaimsAsync(users);
             var roles = await _userManager.GetRolesAsync(users);
-            var data = new GetAllUserReponse()
+            var data = new GetUserByIdReponse()
             {
                 Id = users.Id,
                 UserName = users.UserName,
@@ -138,13 +146,13 @@ namespace AuthenProject.Service.Handle
                         signingCredentials: new SigningCredentials(authSignKey, SecurityAlgorithms.HmacSha256)
                     );
                 string TokenAsString = new JwtSecurityTokenHandler().WriteToken(token);
+
                 return new MessageReponse()
                 {
                     Message = TokenAsString,
                     IsSuccess = true,
                     ExpireDate = token.ValidTo
                 };
-
 
             }
             else
@@ -186,7 +194,15 @@ namespace AuthenProject.Service.Handle
                     IsSuccess = false,
                 };
             }
-
+            if (!model.Dob.HasValue)
+            {
+                return new MessageReponse()
+                {
+                    Message = "Dob is Required !",
+                    IsSuccess = false,
+                };
+            }
+           
             var user = new AppUser()
             {
                 UserName = model.UserName.ToUpper(),
@@ -199,6 +215,38 @@ namespace AuthenProject.Service.Handle
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
+                var listRoleModel = new ArrayList();
+                if(model.ListRoleName == null)
+                {
+                    return new MessageReponse()
+                    {
+                        Message = "This user is not belong to any role !",
+                        IsSuccess = true,
+                    };
+                }
+                foreach(var role in model.ListRoleName)
+                {
+                    var roleModel = new AddToRoleModel()
+                    {
+                        UserName = model.UserName,
+                        RoleName = role
+                    };
+                    listRoleModel.Add(roleModel);
+                }
+
+                if(listRoleModel == null)
+                {
+                    return new MessageReponse()
+                    {
+                        Message = "Add role failed !",
+                        IsSuccess = false,
+                    };
+                }
+                foreach(AddToRoleModel roleModel in listRoleModel)
+                {
+
+                    await _roleService.AddUserToRole(roleModel);
+                }
                 return new MessageReponse()
                 {
                     Message = "Register Successed !",

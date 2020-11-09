@@ -29,12 +29,23 @@ namespace AuthenProject.EFModel
             modelBuilder.Entity<IdentityUserClaim<Guid>>().HasKey(x => x.UserId);
             modelBuilder.Entity<IdentityUserToken<Guid>>().HasKey(x => x.UserId);
             modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("AppRoleClaims");
-            modelBuilder.Entity<IdentityUserRole<Guid>>().HasKey(x => new { x.RoleId,x.UserId});
+            modelBuilder.Entity<IdentityUserRole<Guid>>().HasKey(x => new { x.RoleId, x.UserId });
+            //Product Configuration
+            modelBuilder.Entity<Product>().ToTable("Products").HasKey(p => p.Id);
+            modelBuilder.Entity<Product>().Property(p => p.Name).HasMaxLength(100).IsRequired();
+            modelBuilder.Entity<Product>().Property(p => p.Price).HasColumnType("Decimal(10,2)").IsRequired();
+            modelBuilder.Entity<Product>().Property(p => p.Description).HasMaxLength(100).IsRequired();
 
-           
+            modelBuilder.Entity<Category>().ToTable("Categories").HasKey(p => p.Id);
+            modelBuilder.Entity<Category>().Property(p => p.Name).HasMaxLength(100).IsRequired();
+
+
+
         }
         public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<AppRole> AppRoles { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Category> Categories { get; set; }
 
     }
 }

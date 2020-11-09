@@ -8,11 +8,7 @@ namespace AuthenProject.Authorization
 {
     public class Permission
     {
-        //Permissions will be assigned to roles with custom claim type
-        public class CustomClaimTypes
-        {
-            public const string Permission = "permission";
-        }
+       
         //Const CRUD for permissions
         public static class Users
         {
@@ -27,6 +23,11 @@ namespace AuthenProject.Authorization
             public const string Create = "Permissions.Dashboards.Create";
             public const string Edit = "Permissions.Dashboards.Edit";
             public const string Delete = "Permissions.Dashboards.Delete";
+        }
+        //Permissions will be assigned to roles with custom claim type
+        public class CustomClaimTypes
+        {
+            public const string Permission = "permission";
         }
         //create a class that will hold the permission to be evaluated. 
         internal class PermissionRequirement : IAuthorizationRequirement

@@ -20,7 +20,7 @@ namespace AuthenProject.Service.Interface
         Task<MessageReponse> DeleteRole(Guid RoleId);
 
         Task<MessageReponse> AddUserToRole(AddToRoleModel model);
-        Task<MessageReponse> RemoveUserFromRole(Guid UserId,string RoleName);
+        Task<MessageReponse> RemoveUserFromRole(AddToRoleModel model);
         Task<MessageReponse> AddClaimToRole(string RoleName);
     }
 }
