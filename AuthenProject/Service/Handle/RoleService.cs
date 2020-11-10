@@ -20,6 +20,7 @@ namespace AuthenProject.Service.Handle
     {
         private readonly RoleManager<AppRole> _roleManager;
         private readonly UserManager<AppUser> _userManager;
+      
         
 
 
@@ -254,7 +255,7 @@ namespace AuthenProject.Service.Handle
                     bool checkrole = userRoles.ToList().Contains(model.RoleName);
                     if (checkrole)
                     {
-                        var result = await _userManager.RemoveFromRoleAsync(user, model.RoleName);
+                        var result = await _userManager.RemoveFromRoleAsync(user, role.Name);
                         if (result.Succeeded)
                         {
                             return new MessageReponse()
