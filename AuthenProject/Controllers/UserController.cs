@@ -23,7 +23,8 @@ namespace AuthenProject.Controllers
         }
         //Post api/user/register
         [HttpPost("Register")]
-        [Authorize(Permission.Users.Create)]
+        [AllowAnonymous]
+        //[Authorize(Permission.Users.Create)]
         public async Task<IActionResult> RegisterUser(RegisterUserModel model)
         {
             var user = await _userService.RegisterUSer(model);

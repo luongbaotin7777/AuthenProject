@@ -28,6 +28,7 @@ namespace AuthenProject
 {
     public class Startup
     {
+       
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -60,7 +61,8 @@ namespace AuthenProject
                /* options.SignIn.RequireConfirmedPhoneNumber = false;*/     // Xác thực số điện thoại
             }).AddEntityFrameworkStores<ApplicationDbContext>() // lưu trữ thông tin identity trên EF( dbcontext->MySQL)
                 .AddDefaultTokenProviders();            // register tokenprovider : phát sinh token (resetpassword, email...)
-            //Adding Authentication
+                                                        //Adding Authentication
+
             services.AddAuthentication(auths =>
             {
                 auths.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -79,6 +81,22 @@ namespace AuthenProject
                      IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwts:Key"]))
                  };
              });
+             //.AddGoogle(options =>
+             //{
+             //    // Đọc thông tin Authentication:Google từ appsettings.json
+             //    IConfigurationSection gooleAuthNSection = Configuration.GetSection("Authencation:Goole");
+             //    // Thiết lập ClientID và ClientSecret để truy cập API google
+             //    options.ClientId = gooleAuthNSection["ClientId"];
+             //    options.ClientSecret = gooleAuthNSection["ClientSecret"];
+             //})
+             //.AddFacebook(options =>
+             //{
+             //    IConfigurationSection facebookAuthNSection = Configuration.GetSection("Authencation:Facebook");
+             //    options.AppId = facebookAuthNSection["AppId"];
+             //    options.AppSecret = facebookAuthNSection["AppSecret"];
+             //    options.CallbackPath = "/facebook-login";
+             //});
+             
             services.Configure<SecurityStampValidatorOptions>(options =>
             {
                 // Trên 30 giây truy cập lại sẽ nạp lại thông tin User (Role)

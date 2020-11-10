@@ -212,9 +212,21 @@ namespace AuthenProject.Service.Handle
                 PhoneNumber = model.PhoneNumber,
                 Dob = model.Dob,
             };
+
+           
+
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
+                var claims = new List<Claim>()
+                {
+
+                    new Claim(ClaimTypes.GivenName,model.FirstName),
+                    new Claim(ClaimTypes.Surname,model.LastName),
+                    new Claim(ClaimTypes.Email,model.Email),
+                };
+                    await _userManager.AddClaimsAsync(user, claims);
+
                 var listRoleModel = new ArrayList();
                 if(model.ListRoleName == null)
                 {

@@ -26,7 +26,7 @@ namespace AuthenProject.EFModel
             modelBuilder.Entity<AppRole>().Property(r => r.Name).HasMaxLength(100).IsRequired();
             //Anonther class in Indentity...
             modelBuilder.Entity<IdentityUserLogin<Guid>>().HasKey(x => x.UserId);
-            modelBuilder.Entity<IdentityUserClaim<Guid>>().HasKey(x => x.UserId);
+            modelBuilder.Entity<IdentityUserClaim<int>>().HasKey(x=>x.Id);
             modelBuilder.Entity<IdentityUserToken<Guid>>().HasKey(x => x.UserId);
             modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("AppRoleClaims");
             modelBuilder.Entity<IdentityUserRole<Guid>>().HasKey(x => new { x.RoleId, x.UserId });

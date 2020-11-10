@@ -5,6 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20201110074646_fixed.cs" />
+    <Compile Remove="Migrations\20201110074646_fixed.Designer.cs" />
+    <Compile Remove="Migrations\20201110075046_fixed1.cs" />
+    <Compile Remove="Migrations\20201110075046_fixed1.Designer.cs" />
+    <Compile Remove="Migrations\20201110083256_fixed1.cs" />
+    <Compile Remove="Migrations\20201110083256_fixed1.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="3.1.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="3.1.9" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.9" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.9" />

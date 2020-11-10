@@ -35,6 +35,7 @@ namespace AuthenProject.Authorization.AuthorizationHandler
 
             foreach (var role in userRoles)
             {
+               
                 var roleClaims = await _roleManager.GetClaimsAsync(role);
                 var permissions = roleClaims.Where(x => x.Type == CustomClaimTypes.Permission &&
                                                         x.Value == requirement.Permission &&

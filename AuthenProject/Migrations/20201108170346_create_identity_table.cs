@@ -69,14 +69,16 @@ namespace AuthenProject.Migrations
                 name: "UserClaims",
                 columns: table => new
                 {
+
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<Guid>(nullable: false),
-                    Id = table.Column<int>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserClaims", x => x.UserId);
+                    table.PrimaryKey("PK_UserClaims", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
