@@ -86,8 +86,8 @@ namespace AuthenProject
 
             {
                 options.SignInScheme = IdentityConstants.ExternalScheme;
-                options.ClientId = "828325491609-9utijt2t5cqu7eub7o9s19teo78pj4ja.apps.googleusercontent.com";
-                options.ClientSecret = "s4mUVSfUCK9RB_PDYw5GN2aC";
+                options.ClientId = "828325491609-03jmf69n74fmeq6t2a1easqj24cdudd1.apps.googleusercontent.com";
+                options.ClientSecret = "Y__Jz7IyM40v2f6tui7_Sr3-";
               
                 //options.SaveTokens = true;
                 //options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
