@@ -30,7 +30,7 @@ namespace AuthenProject.Controllers
         
         [AllowAnonymous]
         [HttpGet]
-        [Route("/api/dangnhap-google")]
+        [Route("/api/google-login")]
         public IActionResult GoogleLogin()
         {
             string redirectUrl = Url.Action("ExternalLoginCallback", "Social");
