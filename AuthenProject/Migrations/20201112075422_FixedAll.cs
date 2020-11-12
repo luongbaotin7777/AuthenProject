@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AuthenProject.Migrations
 {
-    public partial class create_identity_table : Migration
+    public partial class FixedAll : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -27,7 +27,7 @@ namespace AuthenProject.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(maxLength: 100, nullable: false),
+                    Name = table.Column<string>(maxLength: 100, nullable: true),
                     NormalizedName = table.Column<string>(nullable: true),
                     ConcurrencyStamp = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true)
@@ -56,8 +56,8 @@ namespace AuthenProject.Migrations
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
-                    FirstName = table.Column<string>(maxLength: 100, nullable: false),
-                    LastName = table.Column<string>(maxLength: 100, nullable: false),
+                    FirstName = table.Column<string>(maxLength: 100, nullable: true),
+                    LastName = table.Column<string>(maxLength: 100, nullable: true),
                     Dob = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -66,10 +66,52 @@ namespace AuthenProject.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Categories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(maxLength: 100, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "IdentityUserClaim<int>",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(nullable: false),
+                    ClaimType = table.Column<string>(nullable: true),
+                    ClaimValue = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IdentityUserClaim<int>", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Products",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(maxLength: 100, nullable: true),
+                    Price = table.Column<decimal>(type: "Decimal(10,2)", nullable: false),
+                    Description = table.Column<string>(maxLength: 100, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserClaims",
                 columns: table => new
                 {
-
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<Guid>(nullable: false),
@@ -85,14 +127,14 @@ namespace AuthenProject.Migrations
                 name: "UserLogins",
                 columns: table => new
                 {
-                    UserId = table.Column<Guid>(nullable: false),
-                    LoginProvider = table.Column<string>(nullable: true),
-                    ProviderKey = table.Column<string>(nullable: true),
-                    ProviderDisplayName = table.Column<string>(nullable: true)
+                    LoginProvider = table.Column<string>(nullable: false),
+                    ProviderKey = table.Column<string>(nullable: false),
+                    ProviderDisplayName = table.Column<string>(nullable: true),
+                    UserId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserLogins", x => x.UserId);
+                    table.PrimaryKey("PK_UserLogins", x => new { x.ProviderKey, x.LoginProvider });
                 });
 
             migrationBuilder.CreateTable(
@@ -132,6 +174,15 @@ namespace AuthenProject.Migrations
 
             migrationBuilder.DropTable(
                 name: "AppUsers");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
+
+            migrationBuilder.DropTable(
+                name: "IdentityUserClaim<int>");
+
+            migrationBuilder.DropTable(
+                name: "Products");
 
             migrationBuilder.DropTable(
                 name: "UserClaims");

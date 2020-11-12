@@ -9,6 +9,7 @@ using AuthenProject.EFModel;
 using AuthenProject.Entities;
 using AuthenProject.Service.Handle;
 using AuthenProject.Service.Interface;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -28,7 +29,7 @@ namespace AuthenProject
 {
     public class Startup
     {
-       
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -57,8 +58,8 @@ namespace AuthenProject
                 options.Lockout.AllowedForNewUsers = true;
                 options.User.RequireUniqueEmail = true;
                 // Cấu hình đăng nhập.
-               /* options.SignIn.RequireConfirmedEmail = true;*/            // Cấu hình xác thực địa chỉ email (email phải tồn tại)
-               /* options.SignIn.RequireConfirmedPhoneNumber = false;*/     // Xác thực số điện thoại
+                /* options.SignIn.RequireConfirmedEmail = true;*/            // Cấu hình xác thực địa chỉ email (email phải tồn tại)
+                /* options.SignIn.RequireConfirmedPhoneNumber = false;*/     // Xác thực số điện thoại
             }).AddEntityFrameworkStores<ApplicationDbContext>() // lưu trữ thông tin identity trên EF( dbcontext->MySQL)
                 .AddDefaultTokenProviders();            // register tokenprovider : phát sinh token (resetpassword, email...)
                                                         //Adding Authentication
@@ -81,21 +82,21 @@ namespace AuthenProject
                      IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwts:Key"]))
                  };
              })
-             //.AddGoogle(options =>
-             //{
-             //    // Đọc thông tin Authentication:Google từ appsettings.json
-             //    IConfigurationSection gooleAuthNSection = Configuration.GetSection("Authencation:Goole");
-             //    // Thiết lập ClientID và ClientSecret để truy cập API google
-             //    options.ClientId = gooleAuthNSection["ClientId"];
-             //    options.ClientSecret = gooleAuthNSection["ClientSecret"];
-             //})
-             .AddFacebook(options =>
-             {
-                 IConfigurationSection facebookAuthNSection = Configuration.GetSection("Authencation:Facebook");
-                 options.AppId = facebookAuthNSection["AppId"];
-                 options.AppSecret = facebookAuthNSection["AppSecret"];
-                 options.CallbackPath = "/facebook-login";
-             });
+            .AddCookie()
+            .AddGoogle(options =>
+
+            {
+                //options.SignInScheme = IdentityConstants.ExternalScheme;
+                options.ClientId = "828325491609-03jmf69n74fmeq6t2a1easqj24cdudd1.apps.googleusercontent.com";
+                options.ClientSecret = "Y__Jz7IyM40v2f6tui7_Sr3-";
+
+                options.SaveTokens = false;
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.ClaimActions.Clear();
+
+
+            });
+
 
             services.Configure<SecurityStampValidatorOptions>(options =>
             {
