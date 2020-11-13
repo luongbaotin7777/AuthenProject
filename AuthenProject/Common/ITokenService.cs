@@ -7,6 +7,6 @@ namespace AuthenProject.Common
 {
     public interface ITokenService
     {
-        Task<MessageReponse> GenerateJWTToken(string UserName);
+        Task<MessageReponse> GenerateJWTToken(string UserName, int expDay);
     }
 }
