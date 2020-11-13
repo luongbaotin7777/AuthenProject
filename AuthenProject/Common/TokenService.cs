@@ -21,7 +21,7 @@ namespace AuthenProject.Common
             _configuration = configuration;
             _userManager = userManager;
         }
-        public async Task<MessageReponse> GenerateJWTToken(string UserName)
+        public async Task<MessageReponse> GenerateJWTToken(string UserName, int expDay)
         {
             var user = await _userManager.FindByNameAsync(UserName);
             if (user == null) throw new Exception($"{UserName} is not found");
@@ -38,7 +38,7 @@ namespace AuthenProject.Common
                 };
             var token = new JwtSecurityToken(
                        claims: claim,
-                       expires: DateTime.UtcNow.AddDays(7),
+                       expires: DateTime.UtcNow.AddDays(expDay),
                        signingCredentials: new SigningCredentials(authSignKey, SecurityAlgorithms.HmacSha256)
                    );
 

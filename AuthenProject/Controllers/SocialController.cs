@@ -40,8 +40,9 @@ namespace AuthenProject.Controllers
         public IActionResult GoogleLogin()
         {
             string redirectUrl = Url.Action("ExternalLoginCallback", "Social");
+            //string redirectUrl = "/api/signin-google";
             var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
-            properties.AllowRefresh = true;
+            //properties.AllowRefresh = true;
             return new ChallengeResult("Google", properties);
         }
         [AllowAnonymous]
@@ -53,7 +54,7 @@ namespace AuthenProject.Controllers
             ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null) throw new Exception("Failed get infor");
             //var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
-            string[] userInfo = { info.Principal.FindFirst(ClaimTypes.Name).Value, info.Principal.FindFirst(ClaimTypes.Email).Value };
+            //string[] userInfo = { info.Principal.FindFirst(ClaimTypes.Name).Value, info.Principal.FindFirst(ClaimTypes.Email).Value };
             
             //var token = info.AuthenticationTokens.Single(x => x.Name == "access_token").Value;
 
@@ -85,13 +86,8 @@ namespace AuthenProject.Controllers
                     };
                     await _roleService.AddUserToRole(role);
                     await _userManager.AddClaimsAsync(appUser, claims);
-                    //identityResult = await _userManager.AddLoginAsync(appUser, info);
-                    //if (identityResult.Succeeded)
-                    //{
-                    //    await _signInManager.SignInAsync(appUser, false);
-                    //    return Ok();
-                    //}
-                    return Ok(userInfo);
+                   var googleToken = await _tokenService.GenerateJWTToken(appUser.UserName,1);
+                    return Ok(googleToken);
                 }
                 return BadRequest();
             }
@@ -106,27 +102,28 @@ namespace AuthenProject.Controllers
                 //if (identityResult.Succeeded)
                 //{
 
-                   
-                   
+
+
                 //        await _signInManager.SignInAsync(userEmailExists, false);
                 //        return Ok();
-                    
+
                 //}
-                return Ok();
+                var googleToken = await _tokenService.GenerateJWTToken(userEmailExists.UserName,1);
+                return Ok(googleToken);
 
             }
 
         }
-        [HttpPost("{UserName}")]
-        public async Task<IActionResult> GenToken(string UserName)
-        {
-            var result = await _tokenService.GenerateJWTToken(UserName);
-            if (result == null)
-            {
-                return BadRequest();
-            }
-            return Ok(result);
-        }
+        //[HttpPost("{UserName}")]
+        //public async Task<IActionResult> GenToken(string UserName)
+        //{
+        //    var result = await _tokenService.GenerateJWTToken(UserName,1);
+        //    if (result == null)
+        //    {
+        //        return BadRequest();
+        //    }
+        //    return Ok(result);
+        //}
 
     }
 }

@@ -131,7 +131,7 @@ namespace AuthenProject.Service.Handle
             var result = await _signInManager.PasswordSignInAsync(userName, model.Password, true, false);
             if (result.Succeeded)
             {
-              return  await _tokenService.GenerateJWTToken(model.Username);
+              return  await _tokenService.GenerateJWTToken(model.Username,1);
                 //var userRoles = await _userManager.GetRolesAsync(userName);
                 //var claim = new List<Claim>()
                 //{

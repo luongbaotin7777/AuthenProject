@@ -11,6 +11,7 @@ using AuthenProject.Entities;
 using AuthenProject.Service.Handle;
 using AuthenProject.Service.Interface;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -69,6 +70,8 @@ namespace AuthenProject
             {
                 auths.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 auths.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                //auths.DefaultAuthenticateScheme = GoogleDefaults.AuthenticationScheme;
+                //auths.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
             })
             // Adding JWT Bearer
              .AddJwtBearer(options =>
@@ -86,11 +89,11 @@ namespace AuthenProject
             .AddGoogle(options =>
 
             {
-
+                
                 options.SignInScheme = IdentityConstants.ExternalScheme;
                 IConfigurationSection googleAuthNSection =
                 Configuration.GetSection("Authentication:Google");
-
+               
                 options.ClientId = googleAuthNSection["ClientId"];
                 options.ClientSecret = googleAuthNSection["ClientSecret"];
                 //options.ClientId = "828325491609-03jmf69n74fmeq6t2a1easqj24cdudd1.apps.googleusercontent.com";
