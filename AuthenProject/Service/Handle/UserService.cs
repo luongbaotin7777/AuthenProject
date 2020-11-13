@@ -20,20 +20,21 @@ namespace AuthenProject.Service.Handle
     public class UserService : IUserService
     {
         private readonly UserManager<AppUser> _userManager;
-        private readonly RoleManager<AppRole> _roleManager;
-
+        //private readonly RoleManager<AppRole> _roleManager;
+        private readonly ITokenService _tokenService;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IConfiguration _configuration;
         private readonly IPasswordHasher<AppUser> _passwordHasher;
         private readonly IRoleService _roleService;
-        public UserService(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager, SignInManager<AppUser> signInManager, IConfiguration configuration, IPasswordHasher<AppUser> passwordHasher, IRoleService roleService)
+        public UserService(UserManager<AppUser> userManager, /*RoleManager<AppRole> roleManager*/ SignInManager<AppUser> signInManager, IConfiguration configuration, IPasswordHasher<AppUser> passwordHasher, IRoleService roleService, ITokenService tokenService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
             _passwordHasher = passwordHasher;
             _roleService = roleService;
-            _roleManager = roleManager;
+            _tokenService = tokenService;
+            //_roleManager = roleManager;
         }
 
         public async Task<MessageReponse> DeleteUser(string UserId)
@@ -130,29 +131,30 @@ namespace AuthenProject.Service.Handle
             var result = await _signInManager.PasswordSignInAsync(userName, model.Password, true, false);
             if (result.Succeeded)
             {
-                var userRoles = await _userManager.GetRolesAsync(userName);
-                var claim = new List<Claim>()
-                {
-                    new Claim(ClaimTypes.NameIdentifier,userName.Id.ToString()),
-                    new Claim(ClaimTypes.GivenName,userName.FirstName),
-                    new Claim(ClaimTypes.Surname,userName.LastName),
-                    new Claim(ClaimTypes.Email,userName.Email),
-                    new Claim(ClaimTypes.Role,string.Join(";",userRoles)),
-                };
-                var authSignKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwts:Key"]));
-                var token = new JwtSecurityToken(
-                        claims: claim,
-                        expires: DateTime.UtcNow.AddDays(7),
-                        signingCredentials: new SigningCredentials(authSignKey, SecurityAlgorithms.HmacSha256)
-                    );
-                string TokenAsString = new JwtSecurityTokenHandler().WriteToken(token);
+              return  await _tokenService.GenerateJWTToken(model.Username);
+                //var userRoles = await _userManager.GetRolesAsync(userName);
+                //var claim = new List<Claim>()
+                //{
+                //    new Claim(ClaimTypes.NameIdentifier,userName.Id.ToString()),
+                //    new Claim(ClaimTypes.GivenName,userName.FirstName),
+                //    new Claim(ClaimTypes.Surname,userName.LastName),
+                //    new Claim(ClaimTypes.Email,userName.Email),
+                //    new Claim(ClaimTypes.Role,string.Join(";",userRoles)),
+                //};
+                //var authSignKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwts:Key"]));
+                //var token = new JwtSecurityToken(
+                //        claims: claim,
+                //        expires: DateTime.UtcNow.AddDays(7),
+                //        signingCredentials: new SigningCredentials(authSignKey, SecurityAlgorithms.HmacSha256)
+                //    );
+                //string TokenAsString = new JwtSecurityTokenHandler().WriteToken(token);
 
-                return new MessageReponse()
-                {
-                    Message = TokenAsString,
-                    IsSuccess = true,
-                    ExpireDate = token.ValidTo
-                };
+                //return new MessageReponse()
+                //{
+                //    Message = TokenAsString,
+                //    IsSuccess = true,
+                //    ExpireDate = token.ValidTo
+                //};
 
             }
             else

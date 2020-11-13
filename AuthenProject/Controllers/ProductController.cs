@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AuthenProject.Authorization;
 using AuthenProject.Dtos;
 using AuthenProject.Service.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +13,7 @@ namespace AuthenProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProductController : ControllerBase
     {
         private readonly IProductService _service;
@@ -29,7 +32,7 @@ namespace AuthenProject.Controllers
         }
         //GET: api/product/(search key = Name,Price)
         [HttpGet]
-
+        [Authorize(Permission.Users.View)]
         public async Task<IActionResult> GetAll(string Name, string Price)
         {
             var product = await _service.GetAllProduct(Name, Price);
@@ -41,6 +44,7 @@ namespace AuthenProject.Controllers
         }
         //Get api/product/id
         [HttpGet("{Id}")]
+        [Authorize(Permission.Users.View)]
         public async Task<IActionResult> GetById(int Id)
         {
             var product = await _service.GetProductById(Id);

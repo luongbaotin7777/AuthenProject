@@ -26,14 +26,15 @@ namespace AuthenProject.Common
             var user = await _userManager.FindByNameAsync(UserName);
             if (user == null) throw new Exception($"{UserName} is not found");
             var authSignKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwts:Key"]));
+            var userRoles = await _userManager.GetRolesAsync(user);
             var claim = new List<Claim>()
                 {
                     new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
                     new Claim(ClaimTypes.GivenName,user.FirstName),
                     new Claim(ClaimTypes.Surname,user.LastName),
                     new Claim(ClaimTypes.Email,user.Email),
-                    
-    
+                    new Claim(ClaimTypes.Role,string.Join(";",userRoles)),
+
                 };
             var token = new JwtSecurityToken(
                        claims: claim,
