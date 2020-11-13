@@ -20,11 +20,13 @@ namespace AuthenProject.Controllers
     {
         private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
+        private readonly ITokenService _tokenService;
 
-        public SocialController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager)
+        public SocialController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager, ITokenService tokenService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _tokenService = tokenService;
        
         }
         
@@ -35,28 +37,21 @@ namespace AuthenProject.Controllers
         {
             string redirectUrl = Url.Action("ExternalLoginCallback", "Social");
             var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
-              //properties.AllowRefresh = true;
+            properties.AllowRefresh = true;
             return new ChallengeResult("Google", properties);
         }
         [AllowAnonymous]
         [HttpGet]
-        [Route("/signin-google")]
+        [Route("/api/signin-google")]
         
         public async Task<IActionResult> ExternalLoginCallback()
         {
             ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null) throw new Exception("Failed get infor");
-            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+            //var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             string[] userInfo = { info.Principal.FindFirst(ClaimTypes.Name).Value, info.Principal.FindFirst(ClaimTypes.Email).Value };
-            if (result.Succeeded)
-            {
-                var inforName = info.Principal.Identity.Name;
-                var inforProvider = info.LoginProvider;
-                string fullInfor = inforName + "" + inforProvider;
-
-                return Ok(fullInfor);
-              
-            }
+            var token = info.AuthenticationTokens.Single(x => x.Name == "access_token").Value;
+            
             var userEmailExists = await _userManager.FindByEmailAsync(info.Principal.FindFirst(ClaimTypes.Email).Value);
             if(userEmailExists == null)
             {
@@ -74,7 +69,7 @@ namespace AuthenProject.Controllers
                     identityResult = await _userManager.AddLoginAsync(appUser, info);
                     if (identityResult.Succeeded)
                     {
-                        //await _signInManager.SignInAsync(appUser, false);
+                        await _signInManager.SignInAsync(appUser, false);
                         return Ok();
                     }
                 }
@@ -93,7 +88,7 @@ namespace AuthenProject.Controllers
                     identityResult = await _userManager.AddLoginAsync(userEmailExists, info);
                     if (identityResult.Succeeded)
                     {
-                        //await _signInManager.SignInAsync(userEmailExists, false);
+                        await _signInManager.SignInAsync(userEmailExists, false);
                         return Ok();
                     }
                 }
@@ -101,6 +96,16 @@ namespace AuthenProject.Controllers
 
             }
            
+        }
+        [HttpPost("{UserName}")]
+        public async Task<IActionResult> GenToken(string UserName)
+        {
+            var result =  await _tokenService.GenerateJWTToken(UserName);
+            if(result == null)
+            {
+                return BadRequest();
+            }
+            return Ok(result);
         }
 
     }

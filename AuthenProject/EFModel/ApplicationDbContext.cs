@@ -20,7 +20,7 @@ namespace AuthenProject.EFModel
             modelBuilder.Entity<AppUser>().ToTable("AppUsers").HasKey(u => u.Id);
             modelBuilder.Entity<AppUser>().Property(u => u.FirstName).HasMaxLength(100);
             modelBuilder.Entity<AppUser>().Property(u => u.LastName).HasMaxLength(100);
-            modelBuilder.Entity<AppUser>().Property(u => u.Dob).IsRequired();
+            modelBuilder.Entity<AppUser>().Property(u => u.Dob);
             //AppRole Configuration
             modelBuilder.Entity<AppRole>().ToTable("AppRoles").HasKey(r => r.Id);
             modelBuilder.Entity<AppRole>().Property(r => r.Name).HasMaxLength(100);
