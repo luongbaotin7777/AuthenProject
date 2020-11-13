@@ -13,7 +13,7 @@ namespace AuthenProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "ADMIN")]
+    //[Authorize(Roles = "ADMIN")]
     public class RoleController : ControllerBase
     {
         private readonly IRoleService _roleService;
