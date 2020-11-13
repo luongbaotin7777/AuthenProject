@@ -86,9 +86,15 @@ namespace AuthenProject
             .AddGoogle(options =>
 
             {
+
                 options.SignInScheme = IdentityConstants.ExternalScheme;
-                options.ClientId = "828325491609-03jmf69n74fmeq6t2a1easqj24cdudd1.apps.googleusercontent.com";
-                options.ClientSecret = "Y__Jz7IyM40v2f6tui7_Sr3-";
+                IConfigurationSection googleAuthNSection =
+                Configuration.GetSection("Authentication:Google");
+
+                options.ClientId = googleAuthNSection["ClientId"];
+                options.ClientSecret = googleAuthNSection["ClientSecret"];
+                //options.ClientId = "828325491609-03jmf69n74fmeq6t2a1easqj24cdudd1.apps.googleusercontent.com";
+                //options.ClientSecret = "Y__Jz7IyM40v2f6tui7_Sr3-";
                 options.SaveTokens = true;
                 //options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 //options.ClaimActions.Clear();

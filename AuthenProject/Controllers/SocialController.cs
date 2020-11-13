@@ -55,7 +55,7 @@ namespace AuthenProject.Controllers
             //var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             string[] userInfo = { info.Principal.FindFirst(ClaimTypes.Name).Value, info.Principal.FindFirst(ClaimTypes.Email).Value };
             
-            var token = info.AuthenticationTokens.Single(x => x.Name == "access_token").Value;
+            //var token = info.AuthenticationTokens.Single(x => x.Name == "access_token").Value;
 
             var userEmailExists = await _userManager.FindByEmailAsync(info.Principal.FindFirst(ClaimTypes.Email).Value);
             if (userEmailExists == null)
