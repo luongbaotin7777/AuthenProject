@@ -39,8 +39,8 @@ namespace AuthenProject.Controllers
         [Route("/api/google-login")]
         public IActionResult GoogleLogin()
         {
-            string redirectUrl = Url.Action("ExternalLoginCallback", "Social");
-            //string redirectUrl = "/api/signin-google";
+
+            string redirectUrl = "/api/signin-google";
             var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
             //properties.AllowRefresh = true;
             return new ChallengeResult("Google", properties);
@@ -114,16 +114,17 @@ namespace AuthenProject.Controllers
             }
 
         }
-        //[HttpPost("{UserName}")]
-        //public async Task<IActionResult> GenToken(string UserName)
-        //{
-        //    var result = await _tokenService.GenerateJWTToken(UserName,1);
-        //    if (result == null)
-        //    {
-        //        return BadRequest();
-        //    }
-        //    return Ok(result);
-        //}
+        [HttpPost("{UserName}")]
+        public async Task<IActionResult> GenToken(string UserName)
+        {
+
+            var result = await _tokenService.GenerateJWTToken(UserName, 1);
+            if (result == null)
+            {
+                return BadRequest();
+            }
+            return Ok(result);
+        }
 
     }
 }
