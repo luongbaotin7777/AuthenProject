@@ -18,14 +18,14 @@ namespace AuthenProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SocialController : ControllerBase
+    public class GoogleAuthen : ControllerBase
     {
         private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
         private readonly ITokenService _tokenService;
         private readonly IRoleService _roleService;
 
-        public SocialController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager, ITokenService tokenService, IRoleService roleService)
+        public GoogleAuthen(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager, ITokenService tokenService, IRoleService roleService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
