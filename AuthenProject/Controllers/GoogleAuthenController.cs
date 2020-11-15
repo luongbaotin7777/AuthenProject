@@ -18,14 +18,14 @@ namespace AuthenProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GoogleAuthen : ControllerBase
+    public class GoogleAuthenController : ControllerBase
     {
         private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
         private readonly ITokenService _tokenService;
         private readonly IRoleService _roleService;
 
-        public GoogleAuthen(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager, ITokenService tokenService, IRoleService roleService)
+        public GoogleAuthenController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager, ITokenService tokenService, IRoleService roleService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -114,17 +114,17 @@ namespace AuthenProject.Controllers
             }
 
         }
-        [HttpPost("{UserName}")]
-        public async Task<IActionResult> GenToken(string UserName)
-        {
+        //[HttpPost("{UserName}")]
+        //public async Task<IActionResult> GenToken(string UserName)
+        //{
 
-            var result = await _tokenService.GenerateJWTToken(UserName, 1);
-            if (result == null)
-            {
-                return BadRequest();
-            }
-            return Ok(result);
-        }
+        //    var result = await _tokenService.GenerateJWTToken(UserName, 1);
+        //    if (result == null)
+        //    {
+        //        return BadRequest();
+        //    }
+        //    return Ok(result);
+        //}
 
     }
 }
