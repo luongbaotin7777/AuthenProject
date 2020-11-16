@@ -1,8 +1,9 @@
 ﻿using AuthenProject.Authorization;
 using AuthenProject.Common;
 using AuthenProject.Dtos;
-using AuthenProject.EFModel;
+
 using AuthenProject.Entities;
+using AuthenProject.Repository.RepositoryBase;
 using AuthenProject.Service.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -20,18 +21,19 @@ namespace AuthenProject.Service.Handle
     {
         private readonly RoleManager<AppRole> _roleManager;
         private readonly UserManager<AppUser> _userManager;
-      
-        
+        private readonly ApplicationDbContext _context;
 
 
-        public RoleService(RoleManager<AppRole> roleManager, UserManager<AppUser> userManager)
+
+        public RoleService(RoleManager<AppRole> roleManager, UserManager<AppUser> userManager, ApplicationDbContext context)
         {
             _roleManager = roleManager;
             _userManager = userManager;
+            _context = context;
 
         }
 
-      
+
 
         public async Task<MessageReponse> AddClaimToRole(string RoleName)
         {
@@ -92,6 +94,7 @@ namespace AuthenProject.Service.Handle
                 }
                 else
                 {
+
                     var userRole = await _userManager.GetRolesAsync(user);
 
                     bool checkrole = userRole.ToList().Contains(model.RoleName);
@@ -149,7 +152,7 @@ namespace AuthenProject.Service.Handle
             var result = await _roleManager.CreateAsync(role);
             if (result.Succeeded)
             {
-                
+
                 return new MessageReponse()
                 {
                     Message = "Create Successed ",
@@ -229,7 +232,8 @@ namespace AuthenProject.Service.Handle
 
         public async Task<MessageReponse> RemoveUserFromRole(AddToRoleModel model)
         {
-            var user = await _userManager.FindByIdAsync(model.UserName);
+
+            var user = await _userManager.FindByNameAsync(model.UserName);
             if (user == null)
             {
                 return new MessageReponse()
@@ -251,33 +255,45 @@ namespace AuthenProject.Service.Handle
                 }
                 else
                 {
-                    var userRoles = await _userManager.GetRolesAsync(user);   
-                    bool checkrole = userRoles.ToList().Contains(model.RoleName);
-                    if (checkrole)
+                    var userRole = await _userManager.GetRolesAsync(user);
+
+                    bool checkrole = userRole.ToList().Contains(model.RoleName);
+
+                    if (!checkrole)
                     {
-                        var result = await _userManager.RemoveFromRoleAsync(user, role.Name);
-                        if (result.Succeeded)
+                        return new MessageReponse()
                         {
+                            Message = "User is not in role",
+                            IsSuccess = false,
+                        };
+                    }
+                    else
+                    {
+                        var queryLinq = from ur in _context.UserRoles
+                                        join au in _context.AppUsers on ur.UserId equals au.Id
+                                        join ar in _context.AppRoles on ur.RoleId equals ar.Id
+                                        where au.UserName == model.UserName && ar.Name == model.RoleName
+                                        select ur;
+
+
+                        var remove = _context.UserRoles.Remove(queryLinq.First());
+
+                        if (remove != null)
+                        {
+                            await _context.SaveChangesAsync();
                             return new MessageReponse()
                             {
-                                Message = "Remove successed",
-                                IsSuccess = true,
+                                Message = "Delete role successed",
+                                IsSuccess = false,
                             };
                         }
                         return new MessageReponse()
                         {
-                            Message = "Remove Failed",
+                            Message = "Delete role failed",
                             IsSuccess = false,
                         };
                     }
-                    return new MessageReponse()
-                    {
-                        Message = "User not belong to Role",
-                        IsSuccess = false,
-                    };
-
                 }
-
             }
         }
 

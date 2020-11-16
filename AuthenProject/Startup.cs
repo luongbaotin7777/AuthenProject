@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using AuthenProject.Authorization;
 using AuthenProject.Authorization.AuthorizationHandler;
 using AuthenProject.Common;
-using AuthenProject.EFModel;
 using AuthenProject.Entities;
+using AuthenProject.Repository.RepositoryBase;
 using AuthenProject.Service.Handle;
 using AuthenProject.Service.Interface;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -96,6 +96,8 @@ namespace AuthenProject
                
                 options.ClientId = googleAuthNSection["ClientId"];
                 options.ClientSecret = googleAuthNSection["ClientSecret"];
+
+
                
 
 

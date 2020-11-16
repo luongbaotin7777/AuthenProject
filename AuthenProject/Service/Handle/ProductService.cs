@@ -1,7 +1,7 @@
 ﻿using AuthenProject.Common;
 using AuthenProject.Dtos;
-using AuthenProject.EFModel;
 using AuthenProject.Entities;
+using AuthenProject.Repository.RepositoryBase;
 using AuthenProject.Service.Interface;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -40,7 +40,7 @@ namespace AuthenProject.Service.Handle
         {
             var product = await _context.Products.FindAsync(Id);
             if (product == null) throw new Exception($"Id not found, Please re-enter the correct Id ");
-            _context.Products.Remove(product);
+            _context.Remove(product);
             await _context.SaveChangesAsync();
             return new MessageReponse()
             {

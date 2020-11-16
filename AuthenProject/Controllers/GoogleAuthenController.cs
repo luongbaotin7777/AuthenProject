@@ -38,11 +38,11 @@ namespace AuthenProject.Controllers
         [HttpGet]
         [Route("/api/google-login")]
         public IActionResult GoogleLogin()
+        
         {
 
             string redirectUrl = "/api/signin-google";
             var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
-            //properties.AllowRefresh = true;
             return new ChallengeResult("Google", properties);
         }
         [AllowAnonymous]

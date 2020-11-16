@@ -32,7 +32,7 @@ namespace AuthenProject.Controllers
         }
         //GET: api/product/(search key = Name,Price)
         [HttpGet]
-        [Authorize]
+        
         //[Authorize(Permission.Users.View)]
         public async Task<IActionResult> GetAll(string Name, string Price)
         {
@@ -47,7 +47,7 @@ namespace AuthenProject.Controllers
         }
         //Get api/product/id
         [HttpGet("{Id}")]
-        [Authorize(Permission.Users.View)]
+        //[Authorize(Permission.Users.View)]
         public async Task<IActionResult> GetById(int Id)
         {
             var product = await _service.GetProductById(Id);

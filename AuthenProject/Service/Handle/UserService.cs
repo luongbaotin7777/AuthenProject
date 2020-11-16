@@ -234,7 +234,7 @@ namespace AuthenProject.Service.Handle
                 {
                     return new MessageReponse()
                     {
-                        Message = "This user is not belong to any role !",
+                        Message = "Register Successed",
                         IsSuccess = true,
                     };
                 }

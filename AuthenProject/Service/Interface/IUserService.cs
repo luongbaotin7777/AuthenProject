@@ -1,6 +1,6 @@
 ﻿using AuthenProject.Common;
 using AuthenProject.Dtos;
-using AuthenProject.EFModel;
+
 using AuthenProject.Entities;
 using System;
 using System.Collections.Generic;

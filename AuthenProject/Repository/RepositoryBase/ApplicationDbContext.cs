@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AuthenProject.EFModel
+namespace AuthenProject.Repository.RepositoryBase
 {
     public class ApplicationDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     {
@@ -25,8 +25,8 @@ namespace AuthenProject.EFModel
             modelBuilder.Entity<AppRole>().ToTable("AppRoles").HasKey(r => r.Id);
             modelBuilder.Entity<AppRole>().Property(r => r.Name).HasMaxLength(100);
             //Anonther class in Indentity...
-            modelBuilder.Entity<IdentityUserLogin<Guid>>().HasKey(x => new {x.ProviderKey,x.LoginProvider });
-            modelBuilder.Entity<IdentityUserClaim<int>>().HasKey(x=>x.Id);
+            modelBuilder.Entity<IdentityUserLogin<Guid>>().HasKey(x => new { x.ProviderKey, x.LoginProvider });
+            modelBuilder.Entity<IdentityUserClaim<int>>().HasKey(x => x.Id);
             modelBuilder.Entity<IdentityUserToken<Guid>>().HasKey(x => x.UserId);
             modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("AppRoleClaims");
             modelBuilder.Entity<IdentityUserRole<Guid>>().HasKey(x => new { x.RoleId, x.UserId });
