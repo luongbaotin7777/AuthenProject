@@ -70,6 +70,51 @@ namespace AuthenProject.Service.Handle
 
         }
 
+        public async Task<MessageReponse> AddPermission(AddPermission model)
+        {
+            //var role = await _roleManager.FindByNameAsync(model.RoleName);
+            //if (role != null)
+            //{
+
+
+            //    var roleId = role.Id.ToString();
+            //    var queryLinq = from rc in _context.RoleClaims
+            //                    select new
+            //                    {
+            //                        V = rc.RoleId.ToString() == roleId,
+            //                        V1 = rc.ClaimType == model.ClaimType,
+            //                        V2 = rc.ClaimValue == model.ClaimValue
+            //                    };
+
+            //    var addPermission = await _context.RoleClaims.AddAsync(queryLinq.First());
+
+            //    if (addPermission != null)
+            //    {
+            //        await _context.SaveChangesAsync();
+            //        return new MessageReponse()
+            //        {
+            //            Message = "Add Claim Successed",
+            //            IsSuccess = true,
+            //        };
+            //    }
+            //    return new MessageReponse()
+            //    {
+            //        Message = "Add Claim Failed",
+            //        IsSuccess = false,
+            //    };
+            //}
+            //return new MessageReponse()
+            //{
+            //    Message = "Role not found",
+            //    IsSuccess = false,
+            //};
+            return new MessageReponse()
+            {
+                Message = "UserName not Found",
+                IsSuccess = false,
+            };
+        }
+
         public async Task<MessageReponse> AddUserToRole(AddToRoleModel model)
         {
             var user = await _userManager.FindByNameAsync(model.UserName);

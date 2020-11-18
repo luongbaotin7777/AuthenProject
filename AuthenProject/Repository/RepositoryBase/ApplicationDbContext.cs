@@ -1,4 +1,5 @@
 ﻿using AuthenProject.Entities;
+using AuthenProject.SeedingData;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +29,7 @@ namespace AuthenProject.Repository.RepositoryBase
             modelBuilder.Entity<IdentityUserLogin<Guid>>().HasKey(x => new { x.ProviderKey, x.LoginProvider });
             modelBuilder.Entity<IdentityUserClaim<int>>().HasKey(x => x.Id);
             modelBuilder.Entity<IdentityUserToken<Guid>>().HasKey(x => x.UserId);
-            modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("AppRoleClaims");
+            modelBuilder.Entity<IdentityRoleClaim<Guid>>().HasKey(x => x.Id);
             modelBuilder.Entity<IdentityUserRole<Guid>>().HasKey(x => new { x.RoleId, x.UserId });
             //Product Configuration
             modelBuilder.Entity<Product>().ToTable("Products").HasKey(p => p.Id);
@@ -38,7 +39,8 @@ namespace AuthenProject.Repository.RepositoryBase
 
             modelBuilder.Entity<Category>().ToTable("Categories").HasKey(p => p.Id);
             modelBuilder.Entity<Category>().Property(p => p.Name).HasMaxLength(100);
-
+            //
+            //modelBuilder.Seed();
 
 
         }

@@ -110,5 +110,16 @@ namespace AuthenProject.Controllers
             }
             return Ok(roleClaim);
         }
+        //Post api/role/addpermission
+        [HttpPost("AddPermission")]
+        public async Task<IActionResult> AddPermission(AddPermission model)
+        {
+            var permission = await _roleService.AddPermission(model);
+            if (permission == null)
+            {
+                return BadRequest(permission);
+            }
+            return Ok(permission);
+        }
     }
 }

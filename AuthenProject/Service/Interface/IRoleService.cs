@@ -22,5 +22,6 @@ namespace AuthenProject.Service.Interface
         Task<MessageReponse> AddUserToRole(AddToRoleModel model);
         Task<MessageReponse> RemoveUserFromRole(AddToRoleModel model);
         Task<MessageReponse> AddClaimToRole(string RoleName);
+        Task<MessageReponse> AddPermission(AddPermission model);
     }
 }
