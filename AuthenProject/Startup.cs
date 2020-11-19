@@ -7,6 +7,7 @@ using AuthenProject.Authorization;
 using AuthenProject.Authorization.AuthorizationHandler;
 using AuthenProject.Common;
 using AuthenProject.Entities;
+using AuthenProject.Repository;
 using AuthenProject.Repository.RepositoryBase;
 using AuthenProject.Service.Handle;
 using AuthenProject.Service.Interface;
@@ -133,6 +134,8 @@ namespace AuthenProject
             services.AddTransient<IProductService, ProductService>();
             //Register the handler
             services.AddTransient<IAuthorizationHandler, PermissionAuthorizationHandler>();
+            // DI RepositoryWrapper
+            services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
             //create a policy for each permission
             services.AddAuthorization(options =>
             {

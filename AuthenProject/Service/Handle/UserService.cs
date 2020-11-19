@@ -1,6 +1,7 @@
 ﻿using AuthenProject.Common;
 using AuthenProject.Dtos;
 using AuthenProject.Entities;
+using AuthenProject.Repository;
 using AuthenProject.Service.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -20,13 +21,14 @@ namespace AuthenProject.Service.Handle
     public class UserService : IUserService
     {
         private readonly UserManager<AppUser> _userManager;
-        //private readonly RoleManager<AppRole> _roleManager;
+       
         private readonly ITokenService _tokenService;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IConfiguration _configuration;
         private readonly IPasswordHasher<AppUser> _passwordHasher;
         private readonly IRoleService _roleService;
-        public UserService(UserManager<AppUser> userManager, /*RoleManager<AppRole> roleManager*/ SignInManager<AppUser> signInManager, IConfiguration configuration, IPasswordHasher<AppUser> passwordHasher, IRoleService roleService, ITokenService tokenService)
+        private IRepositoryWrapper _repositoryWrapper;
+        public UserService(IRepositoryWrapper repositoryWrapper, UserManager<AppUser> userManager,SignInManager<AppUser> signInManager, IConfiguration configuration, IPasswordHasher<AppUser> passwordHasher, IRoleService roleService, ITokenService tokenService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -34,14 +36,15 @@ namespace AuthenProject.Service.Handle
             _passwordHasher = passwordHasher;
             _roleService = roleService;
             _tokenService = tokenService;
-            //_roleManager = roleManager;
+            _repositoryWrapper = repositoryWrapper;
         }
-
+       
         public async Task<MessageReponse> DeleteUser(string UserId)
         {
             var user = await _userManager.FindByIdAsync(UserId.ToString());
             if (user == null) throw new Exception($"{UserId} not Found");
             var result = await _userManager.DeleteAsync(user);
+          
             if (result.Succeeded)
             {
                 return new MessageReponse()

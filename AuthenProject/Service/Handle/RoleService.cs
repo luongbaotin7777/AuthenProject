@@ -3,6 +3,7 @@ using AuthenProject.Common;
 using AuthenProject.Dtos;
 
 using AuthenProject.Entities;
+using AuthenProject.Repository;
 using AuthenProject.Repository.RepositoryBase;
 using AuthenProject.Service.Interface;
 using Microsoft.AspNetCore.Identity;
@@ -22,14 +23,16 @@ namespace AuthenProject.Service.Handle
         private readonly RoleManager<AppRole> _roleManager;
         private readonly UserManager<AppUser> _userManager;
         private readonly ApplicationDbContext _context;
+        private readonly IRepositoryWrapper _repositoryWrapper;
 
 
 
-        public RoleService(RoleManager<AppRole> roleManager, UserManager<AppUser> userManager, ApplicationDbContext context)
+        public RoleService(RoleManager<AppRole> roleManager, UserManager<AppUser> userManager, ApplicationDbContext context, IRepositoryWrapper repositoryWrapper)
         {
             _roleManager = roleManager;
             _userManager = userManager;
             _context = context;
+            _repositoryWrapper = repositoryWrapper;
 
         }
 
@@ -70,7 +73,7 @@ namespace AuthenProject.Service.Handle
 
         }
 
-        public async Task<MessageReponse> AddPermission(AddPermission model)
+        public  MessageReponse AddPermission(AddPermission model)
         {
             //var role = await _roleManager.FindByNameAsync(model.RoleName);
             //if (role != null)
