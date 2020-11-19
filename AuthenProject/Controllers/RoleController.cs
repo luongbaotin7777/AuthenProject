@@ -121,5 +121,15 @@ namespace AuthenProject.Controllers
         //    }
         //    return Ok(permission);
         //}
+        [HttpGet("FindRole")]
+        public async Task<IActionResult> FindRole(string Name)
+        {
+            var role = await _roleService.FindRole(Name);
+            if (role == null)
+            {
+                return BadRequest(role);
+            }
+            return Ok(role);
+        }
     }
 }

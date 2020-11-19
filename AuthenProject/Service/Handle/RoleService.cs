@@ -220,6 +220,18 @@ namespace AuthenProject.Service.Handle
             };
         }
 
+        public async Task<List<GetAllRoleModel>> FindRole(string Name)
+        {
+            var product = _repositoryWrapper.Role.GetbyWhereCondition(x => x.Name.Contains(Name));
+            var result = await product.Select(x => new GetAllRoleModel()
+            {
+                Id = x.Id,
+                RoleName = x.Name,
+                Description = x.Description
+            }).ToListAsync();
+            return result;
+        }
+
         public async Task<IEnumerable<AppRole>> GetAllRole()
         {
 

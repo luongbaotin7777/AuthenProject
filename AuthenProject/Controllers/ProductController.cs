@@ -35,8 +35,7 @@ namespace AuthenProject.Controllers
         
         //[Authorize(Permission.Users.View)]
         public async Task<IActionResult> GetAll()
-        {
-          
+        {         
             var product = await _service.GetAllProduct();
             if (product == null)
             {
