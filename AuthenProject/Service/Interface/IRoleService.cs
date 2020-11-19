@@ -13,9 +13,9 @@ namespace AuthenProject.Service.Interface
     public interface IRoleService
     {
         Task<MessageReponse> CreateRole(CreateRoleModel model);
-        Task<List<GetAllRoleModel>> GetAllRole(string RoleName);
+        Task<IEnumerable<AppRole>> GetAllRole();
 
-        Task<GetAllRoleModel> GetRoleById(string RoleId);
+        Task<GetAllRoleModel> GetRoleById(Guid RoleId);
         Task<MessageReponse> UpdateRole(Guid RoleId, CreateRoleModel model);
         Task<MessageReponse> DeleteRole(Guid RoleId);
 

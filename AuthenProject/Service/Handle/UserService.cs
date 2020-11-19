@@ -38,68 +38,87 @@ namespace AuthenProject.Service.Handle
             _tokenService = tokenService;
             _repositoryWrapper = repositoryWrapper;
         }
-       
-        public async Task<MessageReponse> DeleteUser(string UserId)
+
+        public async Task<MessageReponse> ChangePassword(string UserName,string currentPassword,string passwordConfirm ,string newPassword)
         {
-            var user = await _userManager.FindByIdAsync(UserId.ToString());
-            if (user == null) throw new Exception($"{UserId} not Found");
-            var result = await _userManager.DeleteAsync(user);
-          
-            if (result.Succeeded)
+            var user = await _userManager.FindByNameAsync(UserName);
+            if(user != null)
             {
+             if(newPassword == passwordConfirm)
+                {
+                    var result =  await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+                    if (result.Succeeded)
+                    {
+                        return new MessageReponse()
+                        {
+                            Message = "Change Password Successfully",
+                            IsSuccess = false
+                        };
+                    }
+                    return new MessageReponse()
+                    {
+                        Message = "Incorrect Current Password",
+                        IsSuccess = false
+                    };
+                }
+               
                 return new MessageReponse()
                 {
-                    Message = "User Deleted",
-                    IsSuccess = true
+                    Message = "The confirmation password is not the same as the password",
+                    IsSuccess = false
                 };
             }
             return new MessageReponse()
             {
-                Message = "Delete Failed",
+                Message = "Incorrect UserName",
                 IsSuccess = false
             };
         }
 
-        public async Task<List<GetAllUserReponse>> GetAllUser(string UserName,string Email)
+        public async Task<MessageReponse> DeleteUser(Guid UserId)
         {
-            if (!string.IsNullOrEmpty(UserName) || !string.IsNullOrEmpty(Email))
+            var user = await _repositoryWrapper.User.FindByIdAsync(UserId);
+            if (user == null) throw new Exception($"{UserId} not Found");
+             _repositoryWrapper.User.Delete(user);
+            await _repositoryWrapper.SaveAsync();
+            return new MessageReponse()
             {
-                var users = _userManager.Users.Where(x => x.UserName.Contains(UserName) || x.Email.Contains(Email));
+                Message = "Deleted successfully",
+                IsSuccess = false
+            };
+        }
 
-                var result = await users.Select(x => new GetAllUserReponse()
-                {
-                    Id = x.Id,
-                    UserName = x.UserName,
-                    Email = x.Email,
-                    FirstName = x.FirstName,
-                    LastName = x.LastName,
-                    Dob = x.Dob,
-                    PhoneNumber = x.PhoneNumber
-                }).ToListAsync();
-                return result;
-            }
-            else
+        public async Task<List<GetAllUserReponse>> GetAllUser()
+        {
+            var users = await _repositoryWrapper.User.GetAllAsync();
+           
+            var listUser = new List<GetAllUserReponse>();
+            foreach(var user in users)
             {
-                var users = await _userManager.Users.Select(x => new GetAllUserReponse()
+                var roles = await _userManager.GetRolesAsync(user);
+                var claims = await _userManager.GetClaimsAsync(user);
+                var data = new GetAllUserReponse()
                 {
-                    Id = x.Id,
-                    UserName = x.UserName,
-                    Email = x.Email,
-                    FirstName = x.FirstName,
-                    LastName = x.LastName,
-                    Dob = x.Dob,
-                    PhoneNumber = x.PhoneNumber,
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    PhoneNumber = user.PhoneNumber,
+                    Dob = user.Dob,
+                    Roles = roles,
+                    Claims = claims
                     
-                }).ToListAsync();
-                
-                return users;
+                };
+                listUser.Add(data);
             }
+            return listUser;
            
         }
 
-        public async Task<GetUserByIdReponse> GetUserById(string UserId)
+        public async Task<GetUserByIdReponse> GetUserById(Guid UserId)
         {
-            var users = await _userManager.FindByIdAsync(UserId.ToString());
+            var users = await _repositoryWrapper.User.FindByIdAsync(UserId);
             if (users == null) throw new Exception($"{UserId} not found");
             
             var claims = await _userManager.GetClaimsAsync(users);
@@ -135,29 +154,7 @@ namespace AuthenProject.Service.Handle
             if (result.Succeeded)
             {
               return  await _tokenService.GenerateJWTToken(model.Username,1);
-                //var userRoles = await _userManager.GetRolesAsync(userName);
-                //var claim = new List<Claim>()
-                //{
-                //    new Claim(ClaimTypes.NameIdentifier,userName.Id.ToString()),
-                //    new Claim(ClaimTypes.GivenName,userName.FirstName),
-                //    new Claim(ClaimTypes.Surname,userName.LastName),
-                //    new Claim(ClaimTypes.Email,userName.Email),
-                //    new Claim(ClaimTypes.Role,string.Join(";",userRoles)),
-                //};
-                //var authSignKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwts:Key"]));
-                //var token = new JwtSecurityToken(
-                //        claims: claim,
-                //        expires: DateTime.UtcNow.AddDays(7),
-                //        signingCredentials: new SigningCredentials(authSignKey, SecurityAlgorithms.HmacSha256)
-                //    );
-                //string TokenAsString = new JwtSecurityTokenHandler().WriteToken(token);
-
-                //return new MessageReponse()
-                //{
-                //    Message = TokenAsString,
-                //    IsSuccess = true,
-                //    ExpireDate = token.ValidTo
-                //};
+               
 
             }
             else
@@ -177,7 +174,7 @@ namespace AuthenProject.Service.Handle
             {
                 return new MessageReponse()
                 {
-                    Message = "ConfirmPassword does not map Password ",
+                    Message = "ConfirmPassword  is not the same Password ",
                     IsSuccess = true,
                 };
             }
@@ -278,9 +275,9 @@ namespace AuthenProject.Service.Handle
             };
         }
 
-        public async Task<MessageReponse> UpdateUser(string UserId, UpdateUserModel model)
+        public async Task<MessageReponse> UpdateUser(Guid UserId, UpdateUserModel model)
         {
-            if (await _userManager.Users.AnyAsync(x => x.Email == model.Email && x.Id.ToString() != UserId))
+            if (await _repositoryWrapper.User.GetByAnyConditionAsync(x => x.Email == model.Email && x.Id != UserId))
             {
                 return new MessageReponse()
                 {
@@ -288,7 +285,7 @@ namespace AuthenProject.Service.Handle
                     IsSuccess = false,
                 };
             }
-            var user = await _userManager.FindByIdAsync(UserId);
+            var user = await _repositoryWrapper.User.FindByIdAsync(UserId);
             if(user == null)
             {
                 return new MessageReponse()

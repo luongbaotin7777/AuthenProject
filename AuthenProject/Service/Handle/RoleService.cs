@@ -73,7 +73,7 @@ namespace AuthenProject.Service.Handle
 
         }
 
-        public  MessageReponse AddPermission(AddPermission model)
+        public MessageReponse AddPermission(AddPermission model)
         {
             //var role = await _roleManager.FindByNameAsync(model.RoleName);
             //if (role != null)
@@ -197,19 +197,11 @@ namespace AuthenProject.Service.Handle
                 Description = model.Description
 
             };
-            var result = await _roleManager.CreateAsync(role);
-            if (result.Succeeded)
-            {
-
-                return new MessageReponse()
-                {
-                    Message = "Create Successed ",
-                    IsSuccess = true,
-                };
-            }
+            await _repositoryWrapper.Role.CreateAsync(role);
+            await _repositoryWrapper.SaveAsync();
             return new MessageReponse()
             {
-                Message = "Create Failed ",
+                Message = "Created Successfully ",
                 IsSuccess = false,
             };
 
@@ -217,54 +209,28 @@ namespace AuthenProject.Service.Handle
 
         public async Task<MessageReponse> DeleteRole(Guid RoleId)
         {
-            var role = await _roleManager.FindByIdAsync(RoleId.ToString());
+            var role = await _repositoryWrapper.Role.FindByIdAsync(RoleId);
             if (role == null) throw new Exception($"{RoleId} not found");
-
-            var result = await _roleManager.DeleteAsync(role);
-            if (result.Succeeded)
-            {
-                return new MessageReponse()
-                {
-                    Message = "Delete Successed",
-                    IsSuccess = true
-                };
-            }
+            _repositoryWrapper.Role.Delete(role);
+            await _repositoryWrapper.SaveAsync();
             return new MessageReponse()
             {
-                Message = "Delete Failed",
+                Message = "Delete Successed",
                 IsSuccess = true
             };
         }
 
-        public async Task<List<GetAllRoleModel>> GetAllRole(string RoleName)
+        public async Task<IEnumerable<AppRole>> GetAllRole()
         {
-            if (!string.IsNullOrEmpty(RoleName))
-            {
-                var roles = _roleManager.Roles.Where(x => x.Name.Contains(RoleName));
-                var result = await roles.Select(x => new GetAllRoleModel()
-                {
-                    Id = x.Id,
-                    RoleName = x.Name,
-                    Description = x.Description
-                }).ToListAsync();
-                return result;
-            }
-            else
-            {
-                var roles = await _roleManager.Roles.Select(x => new GetAllRoleModel()
-                {
-                    Id = x.Id,
-                    RoleName = x.Name,
-                    Description = x.Description
-                }).ToListAsync();
-                return roles;
-            }
+
+            var roles = await _repositoryWrapper.Role.GetAllAsync();
+            return roles;
 
         }
 
-        public async Task<GetAllRoleModel> GetRoleById(string RoleId)
+        public async Task<GetAllRoleModel> GetRoleById(Guid RoleId)
         {
-            var role = await _roleManager.FindByIdAsync(RoleId.ToString());
+            var role = await _repositoryWrapper.Role.FindByIdAsync(RoleId);
             if (role == null) throw new Exception($"Cannot find RoleId: {RoleId}");
             var result = new GetAllRoleModel()
             {
@@ -322,8 +288,6 @@ namespace AuthenProject.Service.Handle
                                         join ar in _context.AppRoles on ur.RoleId equals ar.Id
                                         where au.UserName == model.UserName && ar.Name == model.RoleName
                                         select ur;
-
-
                         var remove = _context.UserRoles.Remove(queryLinq.First());
 
                         if (remove != null)
@@ -347,44 +311,49 @@ namespace AuthenProject.Service.Handle
 
         public async Task<MessageReponse> UpdateRole(Guid RoleId, CreateRoleModel model)
         {
-            if (await _roleManager.Roles.AnyAsync(x => x.Name == model.RoleName && x.Id != RoleId))
-            {
-                return new MessageReponse()
-                {
-                    Message = "RoleName already exists",
-                    IsSuccess = false,
-                };
-            }
-            var role = await _roleManager.FindByIdAsync(RoleId.ToString());
+            var role = await _repositoryWrapper.Role.FindByIdAsync(RoleId);
             if (role == null)
             {
                 return new MessageReponse()
                 {
-                    Message = "RoldId Not Found",
+                    Message = "RoleId Not Found",
                     IsSuccess = false,
                 };
             }
-            if (!string.IsNullOrEmpty(model.RoleName))
+
+            if (!await _repositoryWrapper.Role.GetByAnyConditionAsync(x => x.Name == model.RoleName && x.Id != RoleId)) 
             {
-                role.Name = model.RoleName;
-            }
-            if (!string.IsNullOrEmpty(model.Description))
-            {
-                role.Description = model.Description;
-            }
-            var result = await _roleManager.UpdateAsync(role);
-            if (result.Succeeded)
-            {
-                return new MessageReponse()
+                if (!string.IsNullOrEmpty(model.RoleName))
                 {
-                    Message = "Update Successed",
-                    IsSuccess = true
-                };
+                    role.Name = model.RoleName;
+                }
+                else
+                {
+                    role.Name = role.Name;
+                }
+                if (!string.IsNullOrEmpty(model.Description))
+                {
+                    role.Description = model.Description;
+                }
+                else
+                {
+                    role.Description = role.Description;
+                }
+                var result = await _roleManager.UpdateAsync(role);
+                if (result.Succeeded)
+                {
+                    return new MessageReponse()
+                    {
+                        Message = "Update Successed",
+                        IsSuccess = true
+                    };
+                }
+
             }
             return new MessageReponse()
             {
-                Message = "Update Failed",
-                IsSuccess = false
+                Message = "RoleName already exists",
+                IsSuccess = false,
             };
         }
     }

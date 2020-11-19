@@ -34,10 +34,10 @@ namespace AuthenProject.Controllers
         [HttpGet]
         
         //[Authorize(Permission.Users.View)]
-        public async Task<IActionResult> GetAll(string Name, string Price)
+        public async Task<IActionResult> GetAll()
         {
-            var user = this.User;
-            var product = await _service.GetAllProduct(Name, Price);
+          
+            var product = await _service.GetAllProduct();
             if (product == null)
             {
                 return NotFound();
@@ -75,9 +75,19 @@ namespace AuthenProject.Controllers
             var product = await _service.DeleteProduct(Id);
             if (product == null)
             {
-                return NotFound();
+                return NotFound(product);
             }
-            return Ok();
+            return Ok(product);
+        }
+        [HttpGet("Search")]
+        public async Task<IActionResult> SearchProduct(string UserName, string Price)
+        {
+            var product = await _service.FindProduct(UserName, Price);
+            if (product == null)
+            {
+                return NotFound(product);
+            }
+            return Ok(product);
         }
     }
 }

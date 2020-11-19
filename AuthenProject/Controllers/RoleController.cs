@@ -35,9 +35,9 @@ namespace AuthenProject.Controllers
         }
         //Get api/role/getall
         [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAllRole(string RoleName)
+        public async Task<IActionResult> GetAllRole()
         {
-            var roles = await _roleService.GetAllRole(RoleName);
+            var roles = await _roleService.GetAllRole();
             if(roles == null)
             {
                 return BadRequest(roles);
@@ -46,7 +46,7 @@ namespace AuthenProject.Controllers
         }
         //Get api/role/roleId
         [HttpGet("{RoleId}")]
-        public async Task<IActionResult> GetRoleById(string RoleId)
+        public async Task<IActionResult> GetRoleById(Guid RoleId)
         {
             var roles = await _roleService.GetRoleById(RoleId);
             if (roles == null)
@@ -90,7 +90,7 @@ namespace AuthenProject.Controllers
         }
         //Delete api/role/roleId
         [HttpDelete("{RoleId}")]
-        public async Task<IActionResult> UpdateRole(Guid RoleId)
+        public async Task<IActionResult> DeleteRole(Guid RoleId)
         {
             var role = await _roleService.DeleteRole(RoleId);
             if (role == null)
@@ -111,15 +111,15 @@ namespace AuthenProject.Controllers
             return Ok(roleClaim);
         }
         //Post api/role/addpermission
-        [HttpPost("AddPermission")]
-        public async Task<IActionResult> AddPermission(AddPermission model)
-        {
-            var permission = await _roleService.AddPermission(model);
-            if (permission == null)
-            {
-                return BadRequest(permission);
-            }
-            return Ok(permission);
-        }
+        //[HttpPost("AddPermission")]
+        //public async Task<IActionResult> AddPermission(AddPermission model)
+        //{
+        //    var permission = await _roleService.AddPermission(model);
+        //    if (permission == null)
+        //    {
+        //        return BadRequest(permission);
+        //    }
+        //    return Ok(permission);
+        //}
     }
 }

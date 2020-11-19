@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 
 namespace AuthenProject.Repository
 {
-    interface IRepositoryWrapper
+   public interface IRepositoryWrapper
     {
         IUserRepository User { get; }
         IRoleRepository Role { get; }
+        IProductRepository Product { get; }
         void Save();
         Task SaveAsync();
     }

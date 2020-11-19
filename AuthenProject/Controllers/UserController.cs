@@ -48,10 +48,10 @@ namespace AuthenProject.Controllers
         }
         //Get api/user/getall
         [HttpGet("Getall")]
-        [Authorize(Permission.Users.View)]
-        public async Task<IActionResult> GetAllUser(string UserName,string Email)
+        //[Authorize(Permission.Users.View)]
+        public async Task<IActionResult> GetAllUser()
         {
-            var users = await _userService.GetAllUser(UserName,Email);
+            var users = await _userService.GetAllUser();
             if (users == null)
             {
                 return BadRequest(users);
@@ -60,8 +60,8 @@ namespace AuthenProject.Controllers
         }
         //Get api/user/userid
         [HttpGet("{UserId}")]
-        [Authorize(Permission.Users.View)]
-        public async Task<IActionResult> GetUserById (string UserId)
+        //[Authorize(Permission.Users.View)]
+        public async Task<IActionResult> GetUserById (Guid UserId)
         {
             var user = await _userService.GetUserById(UserId);
             if (user == null)
@@ -72,8 +72,8 @@ namespace AuthenProject.Controllers
         }
         //Delete api/user/userid
         [HttpDelete("{UserId}")]
-        [Authorize(Permission.Users.Delete)]
-        public async Task<IActionResult> DeleteUser(string UserId)
+        //[Authorize(Permission.Users.Delete)]
+        public async Task<IActionResult> DeleteUser(Guid UserId)
         {
             var user = await _userService.DeleteUser(UserId);
             if (user == null)
@@ -84,8 +84,8 @@ namespace AuthenProject.Controllers
         }
         //Update api/user/userid
         [HttpPut("{UserId}")]
-        [Authorize(Permission.Users.Edit)]
-        public async Task<IActionResult> UpdateUser(string UserId,UpdateUserModel model)
+        //[Authorize(Permission.Users.Edit)]
+        public async Task<IActionResult> UpdateUser(Guid UserId,UpdateUserModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -97,6 +97,17 @@ namespace AuthenProject.Controllers
                 return BadRequest(user);
             }
             return Ok(user);
+        }
+        [HttpPut("ChangePassword")]
+        public async Task<IActionResult> ChangePassword(string UserName,string currentPassword,string newPassword,string passwordConfirm)
+        {
+            var password = await _userService.ChangePassword(UserName, currentPassword, newPassword, passwordConfirm);
+            if (password == null)
+            {
+                return BadRequest(password);
+            }
+            return Ok(password);
+
         }
     }
 }

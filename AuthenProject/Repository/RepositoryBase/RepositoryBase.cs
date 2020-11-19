@@ -26,7 +26,7 @@ namespace AuthenProject.Repository.RepositoryBase
         {
             return await _context.Set<T>().ToListAsync();
         }
-
+        
 
         public T FindById(Guid id)
         {
@@ -37,7 +37,16 @@ namespace AuthenProject.Repository.RepositoryBase
         {
             return await _context.Set<T>().FindAsync(id);
         }
+        public T FindById(int id)
+        {
+            return _context.Set<T>().Find(id);
+        }
 
+        
+        public async Task<T> FindByIdAsync(int id)
+        {
+            return await _context.Set<T>().FindAsync(id);
+        }
         public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> expression)
         {
             return await _context.Set<T>().FirstOrDefaultAsync(expression);
@@ -47,14 +56,18 @@ namespace AuthenProject.Repository.RepositoryBase
             return _context.Set<T>().SingleOrDefault(expression);
         }
 
-        public IQueryable<T> GetbyCondition(Expression<Func<T, bool>> expression)
+        public IQueryable<T> GetbyWhereCondition(Expression<Func<T, bool>> expression)
         {
             return _context.Set<T>().Where(expression).AsNoTracking();
         }
 
-        public async Task<List<T>> GetByConditionAsync(Expression<Func<T, bool>> expression)
+        public async Task<List<T>> GetByWhereConditionAsync(Expression<Func<T, bool>> expression)
         {
             return await _context.Set<T>().Where(expression).ToListAsync();
+        }
+        public async Task<bool> GetByAnyConditionAsync(Expression<Func<T, bool>> expression)
+        {
+            return await _context.Set<T>().AnyAsync(expression);
         }
 
         public void Create(T entity)
@@ -83,5 +96,7 @@ namespace AuthenProject.Repository.RepositoryBase
         {
              _context.Set<T>().Update(entity);
         }
+
+       
     }
 }

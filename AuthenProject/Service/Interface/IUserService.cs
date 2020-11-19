@@ -13,11 +13,11 @@ namespace AuthenProject.Service.Interface
     {
         Task<MessageReponse> RegisterUSer(RegisterUserModel model);
         Task<MessageReponse> LoginUser(LoginUserModel model);
-        Task<List<GetAllUserReponse>> GetAllUser(string UserName,string Email);
-        Task<GetUserByIdReponse> GetUserById(string UserId);
-        Task<MessageReponse> DeleteUser(string UserId);
-        Task<MessageReponse> UpdateUser(string UserId, UpdateUserModel model);
-
+        Task<List<GetAllUserReponse>> GetAllUser();
+        Task<GetUserByIdReponse> GetUserById(Guid UserId);
+        Task<MessageReponse> DeleteUser(Guid UserId);
+        Task<MessageReponse> UpdateUser(Guid UserId, UpdateUserModel model);
+        Task<MessageReponse> ChangePassword(string UserName,string currentPassword,string newPassword, string passwordConfirm);
 
     }
 }

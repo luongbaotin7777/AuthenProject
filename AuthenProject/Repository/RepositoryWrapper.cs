@@ -11,6 +11,7 @@ namespace AuthenProject.Repository
         private readonly ApplicationDbContext _context;
         private  IUserRepository _user;
         private  IRoleRepository _role;
+        private IProductRepository _product;
        
         public RepositoryWrapper(ApplicationDbContext context)
         {
@@ -36,6 +37,18 @@ namespace AuthenProject.Repository
                     _role = new RoleRepository(_context);
                 }
                 return _role;
+            }
+        }
+
+        public IProductRepository Product
+        {
+            get
+            {
+                if(_product == null)
+                {
+                    _product = new ProductRepository(_context);
+                }
+                return _product;
             }
         }
 
