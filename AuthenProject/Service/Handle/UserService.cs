@@ -90,8 +90,7 @@ namespace AuthenProject.Service.Handle
 
         public async Task<List<GetAllUserReponse>> GetAllUser()
         {
-            var users = await _repositoryWrapper.User.GetAllAsync();
-           
+            var users = await _repositoryWrapper.User.GetAllAsync();    
             var listUser = new List<GetAllUserReponse>();
             foreach(var user in users)
             {
