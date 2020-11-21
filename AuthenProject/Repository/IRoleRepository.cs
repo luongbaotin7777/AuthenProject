@@ -9,6 +9,6 @@ namespace AuthenProject.Repository
 {
     public interface IRoleRepository : IRepositoryBase<AppRole>
     {
-
+       
     }
 }

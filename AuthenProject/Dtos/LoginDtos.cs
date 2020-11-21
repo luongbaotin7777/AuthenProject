@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 
 namespace AuthenProject.Dtos
 {
-    public class RemoveRoleUser
+    public class LoginDtos
     {
-        public string UserName { get; set; }
-        public List<string> ListRole { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+       
     }
 }

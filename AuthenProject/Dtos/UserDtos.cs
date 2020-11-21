@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AuthenProject.Dtos
 {
-    public class GetAllUserReponse
+    public class UserDtos
     {
         public Guid Id { get; set; }
         public string UserName { get; set; }
@@ -17,6 +17,8 @@ namespace AuthenProject.Dtos
         public string PhoneNumber { get; set; }
         public IList<string> Roles { get; set; }
         public IList<Claim> Claims { get; set; }
+
+
 
 
     }

@@ -25,7 +25,7 @@ namespace AuthenProject.Controllers
         //POST: api/product
         [HttpPost]
 
-        public async Task<IActionResult> Create([FromBody] ProductRequest request)
+        public async Task<IActionResult> Create([FromBody] ProductRequestDtos request)
         {
             var product = await _service.CreateProduct(request);
             return Ok(product);
@@ -58,7 +58,7 @@ namespace AuthenProject.Controllers
         }
         //PUT: api/product/id
         [HttpPut("{Id}")]
-        public async Task<IActionResult> Update(int Id,[FromBody] ProductRequest request)
+        public async Task<IActionResult> Update(int Id,[FromBody] ProductRequestDtos request)
         {
 
             var product = await _service.UpdateProduct(Id,request);

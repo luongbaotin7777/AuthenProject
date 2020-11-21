@@ -27,8 +27,8 @@ namespace AuthenProject.Service.Handle
         private readonly IConfiguration _configuration;
         private readonly IPasswordHasher<AppUser> _passwordHasher;
         private readonly IRoleService _roleService;
-        private IRepositoryWrapper _repositoryWrapper;
-        public UserService(IRepositoryWrapper repositoryWrapper, UserManager<AppUser> userManager,SignInManager<AppUser> signInManager, IConfiguration configuration, IPasswordHasher<AppUser> passwordHasher, IRoleService roleService, ITokenService tokenService)
+        private IUnitOfWork _unitofwork;
+        public UserService(IUnitOfWork unitofwork, UserManager<AppUser> userManager,SignInManager<AppUser> signInManager, IConfiguration configuration, IPasswordHasher<AppUser> passwordHasher, IRoleService roleService, ITokenService tokenService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -36,7 +36,7 @@ namespace AuthenProject.Service.Handle
             _passwordHasher = passwordHasher;
             _roleService = roleService;
             _tokenService = tokenService;
-            _repositoryWrapper = repositoryWrapper;
+            _unitofwork = unitofwork;
         }
 
         public async Task<MessageReponse> ChangePassword(string UserName,string currentPassword,string passwordConfirm ,string newPassword)
@@ -77,10 +77,10 @@ namespace AuthenProject.Service.Handle
 
         public async Task<MessageReponse> DeleteUser(Guid UserId)
         {
-            var user = await _repositoryWrapper.User.FindByIdAsync(UserId);
+            var user = await _unitofwork.User.FindByIdAsync(UserId);
             if (user == null) throw new Exception($"{UserId} not Found");
-             _repositoryWrapper.User.Delete(user);
-            await _repositoryWrapper.SaveAsync();
+             _unitofwork.User.Delete(user);
+            await _unitofwork.SaveAsync();
             return new MessageReponse()
             {
                 Message = "Deleted successfully",
@@ -88,15 +88,15 @@ namespace AuthenProject.Service.Handle
             };
         }
 
-        public async Task<List<GetAllUserReponse>> GetAllUser()
+        public async Task<List<UserDtos>> GetAllUser()
         {
-            var users = await _repositoryWrapper.User.GetAllAsync();    
-            var listUser = new List<GetAllUserReponse>();
+            var users = await _unitofwork.User.GetAllAsync();    
+            var listUser = new List<UserDtos>();
             foreach(var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
                 var claims = await _userManager.GetClaimsAsync(user);
-                var data = new GetAllUserReponse()
+                var data = new UserDtos()
                 {
                     Id = user.Id,
                     UserName = user.UserName,
@@ -115,14 +115,14 @@ namespace AuthenProject.Service.Handle
            
         }
 
-        public async Task<GetUserByIdReponse> GetUserById(Guid UserId)
+        public async Task<UserDtos> GetUserById(Guid UserId)
         {
-            var users = await _repositoryWrapper.User.FindByIdAsync(UserId);
+            var users = await _unitofwork.User.FindByIdAsync(UserId);
             if (users == null) throw new Exception($"{UserId} not found");
             
             var claims = await _userManager.GetClaimsAsync(users);
             var roles = await _userManager.GetRolesAsync(users);
-            var data = new GetUserByIdReponse()
+            var data = new UserDtos()
             {
                 Id = users.Id,
                 UserName = users.UserName,
@@ -138,7 +138,7 @@ namespace AuthenProject.Service.Handle
             return data;
         }
 
-        public async Task<MessageReponse> LoginUser(LoginUserModel model)
+        public async Task<MessageReponse> LoginUser(LoginDtos model)
         {
             var userName = await _userManager.FindByNameAsync(model.Username);
             if (userName == null)
@@ -167,7 +167,7 @@ namespace AuthenProject.Service.Handle
             };
 
         }
-        public async Task<MessageReponse> RegisterUSer(RegisterUserModel model)
+        public async Task<MessageReponse> RegisterUSer(RegisterRequestDto model)
         {
             if (model.Password != model.ConfirmPassword)
             {
@@ -276,7 +276,7 @@ namespace AuthenProject.Service.Handle
 
         public async Task<MessageReponse> UpdateUser(Guid UserId, UpdateUserModel model)
         {
-            if (await _repositoryWrapper.User.GetByAnyConditionAsync(x => x.Email == model.Email && x.Id != UserId))
+            if (await _unitofwork.User.GetByAnyConditionAsync(x => x.Email == model.Email && x.Id != UserId))
             {
                 return new MessageReponse()
                 {
@@ -284,7 +284,7 @@ namespace AuthenProject.Service.Handle
                     IsSuccess = false,
                 };
             }
-            var user = await _repositoryWrapper.User.FindByIdAsync(UserId);
+            var user = await _unitofwork.User.FindByIdAsync(UserId);
             if(user == null)
             {
                 return new MessageReponse()

@@ -11,10 +11,10 @@ namespace AuthenProject.Service.Interface
 {
     public interface IUserService
     {
-        Task<MessageReponse> RegisterUSer(RegisterUserModel model);
-        Task<MessageReponse> LoginUser(LoginUserModel model);
-        Task<List<GetAllUserReponse>> GetAllUser();
-        Task<GetUserByIdReponse> GetUserById(Guid UserId);
+        Task<MessageReponse> RegisterUSer(RegisterRequestDto model);
+        Task<MessageReponse> LoginUser(LoginDtos model);
+        Task<List<UserDtos>> GetAllUser();
+        Task<UserDtos> GetUserById(Guid UserId);
         Task<MessageReponse> DeleteUser(Guid UserId);
         Task<MessageReponse> UpdateUser(Guid UserId, UpdateUserModel model);
         Task<MessageReponse> ChangePassword(string UserName,string currentPassword,string newPassword, string passwordConfirm);

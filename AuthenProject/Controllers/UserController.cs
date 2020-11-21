@@ -25,7 +25,7 @@ namespace AuthenProject.Controllers
         [HttpPost("Register")]
         [AllowAnonymous]
         //[Authorize(Permission.Users.Create)]
-        public async Task<IActionResult> RegisterUser(RegisterUserModel model)
+        public async Task<IActionResult> RegisterUser(RegisterRequestDto model)
         {
             var user = await _userService.RegisterUSer(model);
             if(user == null)
@@ -37,7 +37,7 @@ namespace AuthenProject.Controllers
         //Post api/user/login
         [HttpPost("Login")]
         [AllowAnonymous]
-        public async Task<IActionResult> LoginUSer(LoginUserModel model)
+        public async Task<IActionResult> LoginUSer(LoginDtos model)
         {
             var user = await _userService.LoginUser(model);
             if (user == null)

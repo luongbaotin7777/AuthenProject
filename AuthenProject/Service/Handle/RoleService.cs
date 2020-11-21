@@ -23,16 +23,16 @@ namespace AuthenProject.Service.Handle
         private readonly RoleManager<AppRole> _roleManager;
         private readonly UserManager<AppUser> _userManager;
         private readonly ApplicationDbContext _context;
-        private readonly IRepositoryWrapper _repositoryWrapper;
+        private readonly IUnitOfWork _unitofwork;
 
 
 
-        public RoleService(RoleManager<AppRole> roleManager, UserManager<AppUser> userManager, ApplicationDbContext context, IRepositoryWrapper repositoryWrapper)
+        public RoleService(RoleManager<AppRole> roleManager, UserManager<AppUser> userManager, ApplicationDbContext context, IUnitOfWork unitofwork)
         {
             _roleManager = roleManager;
             _userManager = userManager;
             _context = context;
-            _repositoryWrapper = repositoryWrapper;
+            _unitofwork = unitofwork;
 
         }
 
@@ -197,8 +197,8 @@ namespace AuthenProject.Service.Handle
                 Description = model.Description
 
             };
-            await _repositoryWrapper.Role.CreateAsync(role);
-            await _repositoryWrapper.SaveAsync();
+            await _unitofwork.Role.CreateAsync(role);
+            await _unitofwork.SaveAsync();
             return new MessageReponse()
             {
                 Message = "Created Successfully ",
@@ -209,10 +209,10 @@ namespace AuthenProject.Service.Handle
 
         public async Task<MessageReponse> DeleteRole(Guid RoleId)
         {
-            var role = await _repositoryWrapper.Role.FindByIdAsync(RoleId);
+            var role = await _unitofwork.Role.FindByIdAsync(RoleId);
             if (role == null) throw new Exception($"{RoleId} not found");
-            _repositoryWrapper.Role.Delete(role);
-            await _repositoryWrapper.SaveAsync();
+            _unitofwork.Role.Delete(role);
+            await _unitofwork.SaveAsync();
             return new MessageReponse()
             {
                 Message = "Delete Successed",
@@ -220,10 +220,10 @@ namespace AuthenProject.Service.Handle
             };
         }
 
-        public async Task<List<GetAllRoleModel>> FindRole(string Name)
+        public async Task<List<RoleDtos>> FindRole(string Name)
         {
-            var product = _repositoryWrapper.Role.GetbyWhereCondition(x => x.Name.Contains(Name));
-            var result = await product.Select(x => new GetAllRoleModel()
+            var product = _unitofwork.Role.GetbyWhereCondition(x => x.Name.Contains(Name));
+            var result = await product.Select(x => new RoleDtos()
             {
                 Id = x.Id,
                 RoleName = x.Name,
@@ -235,16 +235,16 @@ namespace AuthenProject.Service.Handle
         public async Task<IEnumerable<AppRole>> GetAllRole()
         {
 
-            var roles = await _repositoryWrapper.Role.GetAllAsync();
+            var roles = await _unitofwork.Role.GetAllAsync();
             return roles;
 
         }
 
-        public async Task<GetAllRoleModel> GetRoleById(Guid RoleId)
+        public async Task<RoleDtos> GetRoleById(Guid RoleId)
         {
-            var role = await _repositoryWrapper.Role.FindByIdAsync(RoleId);
+            var role = await _unitofwork.Role.FindByIdAsync(RoleId);
             if (role == null) throw new Exception($"Cannot find RoleId: {RoleId}");
-            var result = new GetAllRoleModel()
+            var result = new RoleDtos()
             {
                 Id = role.Id,
                 Description = role.Description,
@@ -323,7 +323,7 @@ namespace AuthenProject.Service.Handle
 
         public async Task<MessageReponse> UpdateRole(Guid RoleId, CreateRoleModel model)
         {
-            var role = await _repositoryWrapper.Role.FindByIdAsync(RoleId);
+            var role = await _unitofwork.Role.FindByIdAsync(RoleId);
             if (role == null)
             {
                 return new MessageReponse()
@@ -333,7 +333,7 @@ namespace AuthenProject.Service.Handle
                 };
             }
 
-            if (!await _repositoryWrapper.Role.GetByAnyConditionAsync(x => x.Name == model.RoleName && x.Id != RoleId)) 
+            if (!await _unitofwork.Role.GetByAnyConditionAsync(x => x.Name == model.RoleName && x.Id != RoleId)) 
             {
                 if (!string.IsNullOrEmpty(model.RoleName))
                 {

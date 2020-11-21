@@ -15,7 +15,7 @@ namespace AuthenProject.Service.Interface
         Task<MessageReponse> CreateRole(CreateRoleModel model);
         Task<IEnumerable<AppRole>> GetAllRole();
 
-        Task<GetAllRoleModel> GetRoleById(Guid RoleId);
+        Task<RoleDtos> GetRoleById(Guid RoleId);
         Task<MessageReponse> UpdateRole(Guid RoleId, CreateRoleModel model);
         Task<MessageReponse> DeleteRole(Guid RoleId);
 
@@ -23,6 +23,6 @@ namespace AuthenProject.Service.Interface
         Task<MessageReponse> RemoveUserFromRole(AddToRoleModel model);
         Task<MessageReponse> AddClaimToRole(string RoleName);
         MessageReponse AddPermission(AddPermission model);
-        Task<List<GetAllRoleModel>> FindRole(string Name);
+        Task<List<RoleDtos>> FindRole(string Name);
     }
 }

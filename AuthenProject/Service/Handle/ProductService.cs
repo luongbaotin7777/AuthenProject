@@ -15,14 +15,14 @@ namespace AuthenProject.Service.Handle
 {
     public class ProductService : IProductService
     {
-        private readonly IRepositoryWrapper _repositoryWrapper;
-        public ProductService(IRepositoryWrapper repositoryWrapper)
+        private readonly IUnitOfWork _unitofwork;
+        public ProductService(IUnitOfWork unitofwork)
         {
-            _repositoryWrapper = repositoryWrapper;
+            _unitofwork = unitofwork;
         }
-        public async Task<MessageReponse> CreateProduct(ProductRequest request)
+        public async Task<MessageReponse> CreateProduct(ProductRequestDtos request)
         {
-            var exists = await _repositoryWrapper.Product.FirstOrDefaultAsync(x => x.Name == request.Name);
+            var exists = await _unitofwork.Product.FirstOrDefaultAsync(x => x.Name == request.Name);
             if (exists != null)
             {
                 return new MessageReponse()
@@ -38,8 +38,8 @@ namespace AuthenProject.Service.Handle
                 Description = request.Description
 
             };
-            await _repositoryWrapper.Product.CreateAsync(product);
-            await _repositoryWrapper.SaveAsync();
+            await _unitofwork.Product.CreateAsync(product);
+            await _unitofwork.SaveAsync();
             return new MessageReponse()
             {
                 Message = "Create successed",
@@ -49,10 +49,10 @@ namespace AuthenProject.Service.Handle
 
         public async Task<MessageReponse> DeleteProduct(int Id)
         {
-            var product = await _repositoryWrapper.Product.FindByIdAsync(Id);
+            var product = await _unitofwork.Product.FindByIdAsync(Id);
             if (product == null) throw new Exception($"Id not found, Please re-enter the correct Id ");
-            _repositoryWrapper.Product.Delete(product);
-            await _repositoryWrapper.SaveAsync();
+            _unitofwork.Product.Delete(product);
+            await _unitofwork.SaveAsync();
             return new MessageReponse()
             {
                 Message = "Delete successed",
@@ -61,10 +61,10 @@ namespace AuthenProject.Service.Handle
 
         }
 
-        public async Task<List<ProductReponse>> FindProduct(string Name, string Price)
+        public async Task<List<ProductResponseDtos>> FindProduct(string Name, string Price)
         {
-            var product = _repositoryWrapper.Product.GetbyWhereCondition(x => x.Name.Contains(Name) || x.Price.ToString().Contains(Price));
-            var result = await product.Select(x => new ProductReponse()
+            var product = _unitofwork.Product.GetbyWhereCondition(x => x.Name.Contains(Name) || x.Price.ToString().Contains(Price));
+            var result = await product.Select(x => new ProductResponseDtos()
             {
                 Id = x.Id,
                 Name  = x.Name,
@@ -74,14 +74,14 @@ namespace AuthenProject.Service.Handle
             return result;
         }
 
-        public async Task<List<ProductReponse>> GetAllProduct()
+        public async Task<List<ProductResponseDtos>> GetAllProduct()
         {
 
-            var products = await _repositoryWrapper.Product.GetAllAsync();
-            var data1= new List<ProductReponse>();
+            var products = await _unitofwork.Product.GetAllAsync();
+            var data1= new List<ProductResponseDtos>();
             foreach(var product in products)
             {
-                var data = new ProductReponse()
+                var data = new ProductResponseDtos()
                 {
                     Id = product.Id,
                     Name = product.Name,
@@ -95,11 +95,11 @@ namespace AuthenProject.Service.Handle
                 
         }
 
-        public async Task<ProductReponse> GetProductById(int Id)
+        public async Task<ProductResponseDtos> GetProductById(int Id)
         {
-            var product = await _repositoryWrapper.Product.FindByIdAsync(Id);
+            var product = await _unitofwork.Product.FindByIdAsync(Id);
             if (product == null) throw new Exception($"Cannot find a product with id: {Id}");
-            var data = new ProductReponse()
+            var data = new ProductResponseDtos()
             {
                 Id = product.Id,
                 Name = product.Name,
@@ -110,11 +110,11 @@ namespace AuthenProject.Service.Handle
 
         }
 
-        public async Task<MessageReponse> UpdateProduct(int Id,ProductRequest request)
+        public async Task<MessageReponse> UpdateProduct(int Id,ProductRequestDtos request)
         {
-            var product = await _repositoryWrapper.Product.FindByIdAsync(Id);
+            var product = await _unitofwork.Product.FindByIdAsync(Id);
             if (product == null) throw new Exception("Id not Found");
-            var existing = await _repositoryWrapper.Product.FirstOrDefaultAsync(x => x.Name == request.Name && x.Id != Id);
+            var existing = await _unitofwork.Product.FirstOrDefaultAsync(x => x.Name == request.Name && x.Id != Id);
             if (existing == null)
             {
                 if (!string.IsNullOrEmpty(request.Name))
@@ -142,8 +142,8 @@ namespace AuthenProject.Service.Handle
                     product.Description = product.Description;
                 }
                
-                _repositoryWrapper.Product.Update(product);
-                await _repositoryWrapper.SaveAsync();
+                _unitofwork.Product.Update(product);
+                await _unitofwork.SaveAsync();
                 return new MessageReponse()
                 {
                     Message = "Update successed",

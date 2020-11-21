@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 
 namespace AuthenProject.Dtos
 {
-    public class ProductRequest
+    public class RoleDtos
     {
-       
-        public string Name { get; set; }
-        public decimal? Price { get; set; }
+        public Guid Id { get; set; }
+        public string RoleName { get; set; }
         public string Description { get; set; }
     }
 }

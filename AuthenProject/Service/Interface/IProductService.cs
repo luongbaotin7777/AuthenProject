@@ -10,11 +10,11 @@ namespace AuthenProject.Service.Interface
 {
     public interface IProductService
     {
-        Task<MessageReponse> CreateProduct(ProductRequest request);
-        Task<List<ProductReponse>> GetAllProduct();
-        Task<ProductReponse> GetProductById(int ProductId);
-        Task<MessageReponse> UpdateProduct(int Id,ProductRequest request);
+        Task<MessageReponse> CreateProduct(ProductRequestDtos request);
+        Task<List<ProductResponseDtos>> GetAllProduct();
+        Task<ProductResponseDtos> GetProductById(int ProductId);
+        Task<MessageReponse> UpdateProduct(int Id,ProductRequestDtos request);
         Task<MessageReponse> DeleteProduct(int Id);
-        Task<List<ProductReponse>> FindProduct(string Name, string Price);
+        Task<List<ProductResponseDtos>> FindProduct(string Name, string Price);
     }
 }

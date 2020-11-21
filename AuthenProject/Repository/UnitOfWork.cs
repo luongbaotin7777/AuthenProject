@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace AuthenProject.Repository
 {
-    public class RepositoryWrapper : IRepositoryWrapper
+    public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _context;
         private  IUserRepository _user;
         private  IRoleRepository _role;
         private IProductRepository _product;
        
-        public RepositoryWrapper(ApplicationDbContext context)
+        public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -60,6 +60,7 @@ namespace AuthenProject.Repository
         public async Task SaveAsync()
         {
            await _context.SaveChangesAsync();
+           
         }
         
     }

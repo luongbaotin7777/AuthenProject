@@ -63,9 +63,8 @@ namespace AuthenProject
                 // Cấu hình đăng nhập.
                 /* options.SignIn.RequireConfirmedEmail = true;*/            // Cấu hình xác thực địa chỉ email (email phải tồn tại)
                 /* options.SignIn.RequireConfirmedPhoneNumber = false;*/     // Xác thực số điện thoại
-            }).AddEntityFrameworkStores<ApplicationDbContext>() // lưu trữ thông tin identity trên EF( dbcontext->MySQL)
+            }).AddEntityFrameworkStores<ApplicationDbContext>() // lưu trữ thông tin identity trên EF( dbcontext->SQL)
                 .AddDefaultTokenProviders();            // register tokenprovider : phát sinh token (resetpassword, email...)
-                                                        //Adding Authentication
 
             services.AddAuthentication(auths =>
             {
@@ -90,34 +89,20 @@ namespace AuthenProject
             .AddGoogle(options =>
 
             {
-                
                 options.SignInScheme = IdentityConstants.ExternalScheme;
                 IConfigurationSection googleAuthNSection =
                 Configuration.GetSection("Authentication:Google");
                
                 options.ClientId = googleAuthNSection["ClientId"];
                 options.ClientSecret = googleAuthNSection["ClientSecret"];
-
-
-               
-
-
-                //options.SaveTokens = true;
-                //options.ClientId = "828325491609-03jmf69n74fmeq6t2a1easqj24cdudd1.apps.googleusercontent.com";
-                //options.ClientSecret = "Y__Jz7IyM40v2f6tui7_Sr3-";
-                //options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                //options.ClaimActions.Clear();
-
-
             });
-
-
             services.Configure<SecurityStampValidatorOptions>(options =>
             {
                 // Trên 30 giây truy cập lại sẽ nạp lại thông tin User (Role)
                 // SecurityStamp trong bảng User đổi -> nạp lại thông tinn Security
                 options.ValidationInterval = TimeSpan.FromSeconds(30);
             });
+            //----------------Dependency Injection------------------------//
             //DI IUserService
             services.AddTransient<IUserService, UserService>();
 
@@ -135,7 +120,7 @@ namespace AuthenProject
             //Register the handler
             services.AddTransient<IAuthorizationHandler, PermissionAuthorizationHandler>();
             // DI RepositoryWrapper
-            services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             //create a policy for each permission
             services.AddAuthorization(options =>
             {

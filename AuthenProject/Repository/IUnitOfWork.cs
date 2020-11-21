@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace AuthenProject.Repository
 {
-   public interface IRepositoryWrapper
+   public interface IUnitOfWork
     {
         IUserRepository User { get; }
         IRoleRepository Role { get; }
